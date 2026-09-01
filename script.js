@@ -7,27 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     initUnicornFollower();
     initClickSparkleEffects();
     initAudioController();
-    initScrollAnimations();
+    initUnicornMiniGame();
 });
 
-/* --------------------------------------------------------------------------
-   Scroll-Driven Reveal Animations (IntersectionObserver)
-   -------------------------------------------------------------------------- */
-function initScrollAnimations() {
-    const cards = document.querySelectorAll('.story-card');
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('visible');
-            }
-        });
-    }, {
-        threshold: 0.12
-    });
-
-    cards.forEach(card => observer.observe(card));
-}
+// Global Unicorn Position for Mini-Game Collision Detection
+let unicornGlobalPos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
 
 /* --------------------------------------------------------------------------
    1. Multi-Layered Starfield Canvas & Shooting Star Particle Engine
@@ -256,6 +240,9 @@ function initUnicornFollower() {
         const posX = currentX - 65;
         const posY = currentY - 65;
 
+        unicornGlobalPos.x = currentX;
+        unicornGlobalPos.y = currentY;
+
         unicorn.style.transform = `translate3d(${posX}px, ${posY}px, 0) rotate(${tilt}deg) scale(${scale})`;
 
         requestAnimationFrame(renderUnicorn);
@@ -349,6 +336,245 @@ function initAudioController() {
             } else {
                 isPlaying = false;
                 if (musicText) musicText.textContent = 'طنین جادویی رویایی';
+            }
+        });
+    }
+}
+
+/* --------------------------------------------------------------------------
+   5. Unicorn Interactive Mini-Game Engine
+   -------------------------------------------------------------------------- */
+function initUnicornMiniGame() {
+    const gameCanvas = document.getElementById('gameCanvas');
+    if (!gameCanvas) return;
+    const ctx = gameCanvas.getContext('2d');
+
+    const scoreDisplay = document.getElementById('scoreDisplay');
+    const highScoreDisplay = document.getElementById('highScoreDisplay');
+    const startBtn = document.getElementById('startGameBtn');
+    const gameBtnText = document.getElementById('gameBtnText');
+    const loveToast = document.getElementById('loveToast');
+    const toastMessage = document.getElementById('toastMessage');
+
+    let isGameRunning = false;
+    let score = 0;
+    let highScore = localStorage.getItem('shadi_unicorn_highscore') || 0;
+    if (highScoreDisplay) highScoreDisplay.textContent = highScore;
+
+    let items = [];
+    let particles = [];
+    let popups = [];
+
+    const itemTypes = [
+        { symbol: '💖', points: 100, color: '#ec4899', radius: 22, rarity: 0.4 },
+        { symbol: '⭐', points: 150, color: '#f59e0b', radius: 20, rarity: 0.3 },
+        { symbol: '💎', points: 250, color: '#a855f7', radius: 24, rarity: 0.15 },
+        { symbol: '🧁', points: 200, color: '#f43f5e', radius: 22, rarity: 0.15 }
+    ];
+
+    const loveMessages = [
+        "شادی جان، تو زیباترین رویای منی! 💕",
+        "با هر لبخندت جهان من روشن‌تر میشه! ✨",
+        "تک‌شاخ جادویی هم تورو خیلی دوست داره! 🦄",
+        "هر ستاره، نشانه‌ای از عشق بی‌کران من به توست! 🌟",
+        "تو فرشتهٔ مهربون دنیای منی شادی! 💖",
+        "بی‌نهایت دوست دارم شادی عزیزم! ❤️"
+    ];
+
+    function resizeCanvas() {
+        const rect = gameCanvas.parentElement.getBoundingClientRect();
+        gameCanvas.width = rect.width;
+        gameCanvas.height = rect.height;
+    }
+
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function spawnItem() {
+        if (!isGameRunning) return;
+
+        const rand = Math.random();
+        let cumulative = 0;
+        let selected = itemTypes[0];
+
+        for (const type of itemTypes) {
+            cumulative += type.rarity;
+            if (rand <= cumulative) {
+                selected = type;
+                break;
+            }
+        }
+
+        items.push({
+            x: Math.random() * (gameCanvas.width - 60) + 30,
+            y: -30,
+            speedY: Math.random() * 2.2 + 1.8,
+            speedX: Math.sin(Math.random() * Math.PI * 2) * 0.8,
+            symbol: selected.symbol,
+            points: selected.points,
+            color: selected.color,
+            radius: selected.radius,
+            rotation: 0,
+            rotSpeed: (Math.random() - 0.5) * 0.05
+        });
+    }
+
+    function createCollectBurst(x, y, color) {
+        for (let i = 0; i < 12; i++) {
+            const angle = (i / 12) * Math.PI * 2;
+            const speed = Math.random() * 4 + 2;
+            particles.push({
+                x, y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                radius: Math.random() * 4 + 2,
+                color,
+                alpha: 1,
+                life: 1
+            });
+        }
+    }
+
+    function showPopupText(text, x, y, color) {
+        popups.push({
+            text, x, y,
+            color,
+            alpha: 1,
+            vy: -1.5
+        });
+    }
+
+    function triggerLoveToast() {
+        if (!loveToast || !toastMessage) return;
+        const msg = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+        toastMessage.textContent = msg;
+        loveToast.classList.remove('hidden');
+
+        setTimeout(() => {
+            loveToast.classList.add('hidden');
+        }, 3200);
+    }
+
+    function checkCollision(item) {
+        const rect = gameCanvas.getBoundingClientRect();
+        const unicornCanvasX = unicornGlobalPos.x - rect.left;
+        const unicornCanvasY = unicornGlobalPos.y - rect.top;
+
+        const dist = Math.hypot(item.x - unicornCanvasX, item.y - unicornCanvasY);
+        return dist < (item.radius + 38);
+    }
+
+    function gameLoop() {
+        ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
+        // Draw items
+        for (let i = items.length - 1; i >= 0; i--) {
+            const item = items[i];
+            item.y += item.speedY;
+            item.x += item.speedX;
+            item.rotation += item.rotSpeed;
+
+            // Draw item glow
+            ctx.save();
+            ctx.shadowBlur = 12;
+            ctx.shadowColor = item.color;
+            ctx.font = `${item.radius * 1.6}px sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(item.symbol, item.x, item.y);
+            ctx.restore();
+
+            // Collision Check
+            if (checkCollision(item)) {
+                score += item.points;
+                if (scoreDisplay) scoreDisplay.textContent = score;
+
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('shadi_unicorn_highscore', highScore);
+                    if (highScoreDisplay) highScoreDisplay.textContent = highScore;
+                }
+
+                createCollectBurst(item.x, item.y, item.color);
+                showPopupText(`+${item.points}`, item.x, item.y - 10, item.color);
+
+                if (score % 500 === 0 || Math.random() < 0.2) {
+                    triggerLoveToast();
+                }
+
+                items.splice(i, 1);
+                continue;
+            }
+
+            if (item.y > gameCanvas.height + 40) {
+                items.splice(i, 1);
+            }
+        }
+
+        // Draw particles
+        for (let i = particles.length - 1; i >= 0; i--) {
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.alpha -= 0.03;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = p.color;
+            ctx.globalAlpha = Math.max(0, p.alpha);
+            ctx.fill();
+            ctx.globalAlpha = 1;
+
+            if (p.alpha <= 0) {
+                particles.splice(i, 1);
+            }
+        }
+
+        // Draw popup text
+        for (let i = popups.length - 1; i >= 0; i--) {
+            const pop = popups[i];
+            pop.y += pop.vy;
+            pop.alpha -= 0.025;
+
+            ctx.save();
+            ctx.font = 'bold 18px Vazirmatn, sans-serif';
+            ctx.fillStyle = pop.color;
+            ctx.globalAlpha = Math.max(0, pop.alpha);
+            ctx.fillText(pop.text, pop.x, pop.y);
+            ctx.restore();
+
+            if (pop.alpha <= 0) {
+                popups.splice(i, 1);
+            }
+        }
+
+        if (isGameRunning) {
+            requestAnimationFrame(gameLoop);
+        }
+    }
+
+    let spawnInterval = null;
+
+    if (startBtn) {
+        startBtn.addEventListener('click', () => {
+            if (!isGameRunning) {
+                isGameRunning = true;
+                score = 0;
+                if (scoreDisplay) scoreDisplay.textContent = '0';
+                items = [];
+                particles = [];
+                popups = [];
+                if (gameBtnText) gameBtnText.textContent = 'بازی در حال اجراست... ✨';
+                startBtn.style.opacity = '0.85';
+
+                spawnInterval = setInterval(spawnItem, 550);
+                gameLoop();
+                triggerLoveToast();
+            } else {
+                isGameRunning = false;
+                clearInterval(spawnInterval);
+                if (gameBtnText) gameBtnText.textContent = 'شروع مجدد بازی';
+                startBtn.style.opacity = '1';
             }
         });
     }

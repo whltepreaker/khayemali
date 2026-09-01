@@ -188,7 +188,7 @@ html, body {
     letter-spacing: 0.3px;
 }
 
-/* Minimalist Divider */
+/* Romantic Pink Heart Divider */
 .divider-ornament {
     display: flex;
     align-items: center;
@@ -196,85 +196,174 @@ html, body {
     gap: 16px;
     width: 100%;
     max-width: 380px;
-    margin: 20px 0 45px 0;
+    margin: 15px 0 35px 0;
 }
 
 .divider-line {
     flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(190, 24, 93, 0.35), transparent);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(244, 114, 182, 0.6), transparent);
 }
 
-.divider-star {
-    opacity: 0.85;
+.divider-heart {
+    font-size: 1.5rem;
+    animation: heartPulse 2s infinite ease-in-out;
 }
 
-/* Story Card Section */
-.story-section {
+@keyframes heartPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3) rotate(8deg); }
+}
+
+/* Unicorn Mini-Game Styling */
+.game-section {
     width: 100%;
-    margin-bottom: 50px;
+    margin-bottom: 45px;
 }
 
-.story-card.unified-story {
-    background: var(--glass-bg);
-    backdrop-filter: blur(22px);
-    -webkit-backdrop-filter: blur(22px);
-    border: 1.5px solid rgba(255, 255, 255, 0.85);
+.game-card {
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 2px solid rgba(255, 182, 193, 0.9);
     border-radius: 32px;
-    padding: 48px 52px;
-    box-shadow: var(--glass-shadow);
-    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s ease, box-shadow 0.4s ease;
-    position: relative;
-    overflow: hidden;
-    opacity: 0;
-    transform: translateY(35px);
-}
-
-.story-card.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.story-header {
-    text-align: center;
-    margin-bottom: 32px;
-    border-bottom: 1px stroke rgba(244, 114, 182, 0.2);
-    padding-bottom: 20px;
-}
-
-.story-title {
-    font-family: var(--font-aref);
-    font-size: clamp(1.8rem, 4vw, 2.3rem);
-    color: var(--deep-pink);
-    font-weight: 700;
-    margin-bottom: 6px;
-}
-
-.story-subtitle {
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    font-weight: 500;
-    opacity: 0.9;
-}
-
-.story-body {
+    padding: 30px 24px;
+    box-shadow: 0 20px 50px rgba(157, 23, 77, 0.15), inset 0 1px 3px rgba(255, 255, 255, 0.95);
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
 }
 
-.story-body p {
-    font-size: clamp(1.1rem, 2.2vw, 1.28rem);
-    line-height: 2.25;
-    color: var(--text-body);
-    font-weight: 400;
-    text-align: justify;
-    text-justify: inter-word;
+.game-header {
+    text-align: center;
+    margin-bottom: 20px;
 }
 
-.story-body strong {
-    color: var(--accent-rose);
+.game-title {
+    font-family: var(--font-aref);
+    font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+    color: var(--deep-pink);
+    margin-bottom: 8px;
     font-weight: 700;
+}
+
+.game-instructions {
+    font-size: 0.98rem;
+    color: var(--text-body);
+    max-width: 600px;
+    line-height: 1.6;
+}
+
+.game-container-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 780px;
+    height: 380px;
+    border-radius: 24px;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(255, 240, 245, 0.7) 0%, rgba(251, 207, 232, 0.85) 100%);
+    border: 1.5px solid rgba(244, 114, 182, 0.4);
+    box-shadow: inset 0 4px 20px rgba(157, 23, 77, 0.08);
+}
+
+#gameCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.game-hud {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    right: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.hud-box {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(244, 114, 182, 0.5);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--deep-pink);
+    box-shadow: 0 4px 12px rgba(157, 23, 77, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.hud-value {
+    font-weight: 800;
+    font-size: 1.15rem;
+    color: var(--accent-rose);
+}
+
+.game-start-btn {
+    pointer-events: auto;
+    background: linear-gradient(135deg, #ec4899, #be185d);
+    color: #ffffff;
+    border: none;
+    padding: 10px 22px;
+    border-radius: 25px;
+    font-family: var(--font-vazir);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(190, 24, 93, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.game-start-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 25px rgba(190, 24, 93, 0.45);
+}
+
+/* Floating Love Toast Modal */
+.love-toast {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.96);
+    border: 2px solid var(--primary-pink);
+    padding: 12px 28px;
+    border-radius: 30px;
+    box-shadow: 0 10px 30px rgba(157, 23, 77, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 20;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.love-toast.hidden {
+    opacity: 0;
+    transform: translate(-50%, 20px) scale(0.9);
+    pointer-events: none;
+}
+
+.toast-heart {
+    font-size: 1.4rem;
+    animation: heartBeat 1.2s infinite ease-in-out;
+}
+
+.toast-text {
+    font-family: var(--font-aref);
+    font-size: 1.18rem;
+    font-weight: 700;
+    color: var(--deep-pink);
 }
 
 /* Love Declaration Section */

@@ -114,50 +114,57 @@
         <!-- Section 1: Hero Header for "شادی" -->
         <header class="hero-section">
             <div class="celestial-badge">
-                <svg class="badge-star" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                    <path d="M12 2l2.4 7.4H22l-6 4.5 2.3 7.1L12 16.5l-6.3 4.5 2.3-7.1-6-4.5h7.6z"/>
-                </svg>
-                <span>افسانهٔ جاودانهٔ مهربانی</span>
-                <svg class="badge-star" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                    <path d="M12 2l2.4 7.4H22l-6 4.5 2.3 7.1L12 16.5l-6.3 4.5 2.3-7.1-6-4.5h7.6z"/>
-                </svg>
+                <span class="sparkle-icon">✨</span>
+                <span>پادشاهی رویایی و عاشقانهٔ دخترانه</span>
+                <span class="sparkle-icon">✨</span>
             </div>
             <h1 class="shadi-title" id="shadiTitle">شادی</h1>
-            <p class="subtitle">همسفر بال‌های نقره‌ای در پهنهٔ کهکشان‌های خیال</p>
+            <p class="subtitle">فرشتهٔ زیبای من در آسمان‌های پر از ستاره و عشق</p>
         </header>
 
-        <!-- Elegant Minimalist Separator -->
+        <!-- Romantic Pink Heart Separator -->
         <div class="divider-ornament">
             <span class="divider-line"></span>
-            <svg viewBox="0 0 24 24" class="divider-star" width="20" height="20">
-                <path fill="#be185d" d="M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z"/>
-            </svg>
+            <span class="divider-heart">💖</span>
             <span class="divider-line"></span>
         </div>
 
-        <!-- Section 2: Consolidated High-Quality Narrative Story -->
-        <section class="story-section" id="storySection">
-            <article class="story-card unified-story" data-aos>
-                <div class="story-header">
-                    <h2 class="story-title">راوی قلمرو رویاها</h2>
-                    <span class="story-subtitle">داستانی دربارهٔ همسفری شادی و تک‌شاخ آسمانی</span>
+        <!-- Section 2: Unicorn Interactive Mini-Game -->
+        <section class="game-section" id="gameSection">
+            <div class="game-card">
+                <div class="game-header">
+                    <h2 class="game-title">✨ بازی جادویی تک‌شاخ و شادی ✨</h2>
+                    <p class="game-instructions">اسب تک‌شاخ با حرکت نشانه (ماوس/لمس) شما حرکت می‌کند! قلب‌ها و ستارگان درخشان را جمع کنید تا پیام‌های عاشقانهٔ ویژه را باز کنید!</p>
                 </div>
 
-                <div class="story-body">
-                    <p>
-                        در ژرفای شب‌هایی که آسمان از نور سپیده‌دمِ ستارگان بیدار می‌شد، دختری می‌زیست که نگاهش زلال‌تر از کریستال‌های کوهستان و وجودش سرشار از گرمایی بی‌مانند بود؛ دختری به نام <strong>شادی</strong>. در طالع شادی، رازی کهن خفته بود — روح او پیوندی گسست‌ناپذیر با آرامش، حقیقت و زیبایی خردورزانه داشت.
-                    </p>
-                    <p>
-                        در یکی از همان شب‌های لبریز از نجواهای شفق، تک‌شاخی اصیل و افسانه‌ای با بال‌هایی همرنگ نور مهتاب و شاخی طلایی که در تاریکی می‌درخشید، از میان ابرهای جادهٔ کهکشانی فرود آمد. این موجود سپیدگون، سال‌ها در میان کرانه‌های کیهان در جستجوی همسفری بود که قلبی نترس و پاک داشته باشد. به محض آنکه نگاه تک‌شاخ به شادی افتاد، وقار، مناعت و صمیمیت نگاه او را بازشناخت و در برابرش سر فرود آورد.
-                    </p>
-                    <p>
-                        آغاز این پیوند، آغازی بر سفری باشکوه به سوی <strong>دیار رویاها</strong> بود. شادی بر گردهٔ مرواریدگون تک‌شاخ نشست و آنها اوج گرفتند؛ از کنار خوشه‌های ستاره‌ای و رودخانه‌های سیال شب‌تاب گذشتند. هر گامِ تک‌شاخ بر سینهٔ آسمان، ردّی از جرقه‌های طلایی بر جای می‌گذاشت و همراهی خنده‌های آرام شادی، به آوای کائنات آهنگی متوازن می‌بخشید.
-                    </p>
-                    <p>
-                        با رسیدن به دروازه‌های دیار رویاها، سپیدهٔ ابدی متجلی شد. سرزمینی که نه تنها آرزوها را جامه‌ای از واقعیت می‌پوشاند، بلکه اصالت و مهر شادی را به عنوان گوهر گرانبهای پادشاهی روشنی برگزید. تک‌شاخ طلایی تا همیشه‌ها پاسدار مسیر او باقی ماند؛ زیرا دریافت که ارزشمندترین رویای این جهان، حضور بی‌بدیل و جاودانهٔ شادی است.
-                    </p>
+                <!-- Game Canvas & HUD overlay -->
+                <div class="game-container-wrapper">
+                    <canvas id="gameCanvas"></canvas>
+
+                    <!-- Game HUD Overlay -->
+                    <div class="game-hud">
+                        <div class="hud-box">
+                            <span class="hud-label">💖 امتیاز عشق:</span>
+                            <span id="scoreDisplay" class="hud-value">0</span>
+                        </div>
+                        <div class="hud-box">
+                            <span class="hud-label">⭐ رکورد بی‌نظیر:</span>
+                            <span id="highScoreDisplay" class="hud-value">0</span>
+                        </div>
+                        <button id="startGameBtn" class="game-start-btn">
+                            <span class="btn-sparkle">✨</span>
+                            <span id="gameBtnText">شروع بازی پر از عشق</span>
+                            <span class="btn-sparkle">✨</span>
+                        </button>
+                    </div>
+
+                    <!-- Floating Love Achievement Toast Modal -->
+                    <div id="loveToast" class="love-toast hidden">
+                        <div class="toast-heart">💌</div>
+                        <div id="toastMessage" class="toast-text">شادی جان، تو زیباترین رویای منی!</div>
+                    </div>
                 </div>
-            </article>
+            </div>
         </section>
 
         <!-- Section 3: Prominent Ending Declaration -->
