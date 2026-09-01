@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شادی | دنیای رویا و افسانه تک‌شاخ</title>
+    <title>شادی | بوم نقاشی و رویای مشترک</title>
 
     <!-- Google Fonts for exquisite Persian & English typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,242 +29,192 @@
 
     <!-- Floating Unicorn Cursor Follower Container -->
     <div id="unicornFollower" class="unicorn-follower">
-        <!-- High Quality Handcrafted SVG Pegasus Unicorn with Horn Sparkle -->
+        <!-- High Quality Handcrafted SVG Pegasus Unicorn -->
         <svg viewBox="0 0 200 200" class="unicorn-svg" xmlns="http://www.w3.org/2000/svg">
             <defs>
-                <!-- Unicorn Gradients -->
                 <linearGradient id="bodyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stop-color="#ffffff"/>
                     <stop offset="50%" stop-color="#fff0f6"/>
                     <stop offset="100%" stop-color="#fcc2d7"/>
                 </linearGradient>
-
                 <linearGradient id="hornGrad" x1="0%" y1="100%" x2="100%" y2="0%">
                     <stop offset="0%" stop-color="#ffd43b"/>
                     <stop offset="50%" stop-color="#ffec99"/>
                     <stop offset="100%" stop-color="#ffffff"/>
                 </linearGradient>
-
                 <linearGradient id="maneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stop-color="#ff8787"/>
                     <stop offset="33%" stop-color="#f783ac"/>
                     <stop offset="66%" stop-color="#da77f2"/>
                     <stop offset="100%" stop-color="#9775fa"/>
                 </linearGradient>
-
                 <linearGradient id="wingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stop-color="rgba(255, 255, 255, 0.95)"/>
                     <stop offset="60%" stop-color="rgba(252, 194, 215, 0.8)"/>
                     <stop offset="100%" stop-color="rgba(218, 119, 242, 0.6)"/>
                 </linearGradient>
-
                 <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
                     <feGaussianBlur stdDeviation="4" result="blur" />
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
-
                 <filter id="hornGlow" x="-50%" y="-50%" width="200%" height="200%">
                     <feGaussianBlur stdDeviation="6" result="blur" />
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
             </defs>
-
-            <!-- Glow Shadow Aura -->
             <ellipse cx="100" cy="155" rx="45" ry="12" fill="rgba(247, 131, 172, 0.35)" filter="url(#glow)"/>
-
-            <!-- Wings (Animated with CSS/JS) -->
             <g class="unicorn-wings">
                 <path d="M 95 85 C 60 40, 20 50, 15 80 C 12 90, 25 105, 45 100 C 65 95, 85 92, 95 85 Z" fill="url(#wingGrad)" opacity="0.9"/>
                 <path d="M 95 85 C 70 30, 30 35, 25 65 C 22 75, 38 90, 58 85 Z" fill="url(#wingGrad)" opacity="0.7"/>
             </g>
-
-            <!-- Unicorn Body -->
             <path d="M 65 135 C 55 120, 55 95, 75 80 C 85 72, 98 75, 110 82 C 125 90, 140 100, 145 120 C 150 140, 135 155, 110 155 C 85 155, 70 145, 65 135 Z" fill="url(#bodyGrad)"/>
-
-            <!-- Sleek Graceful Neck & Head -->
             <path d="M 98 82 C 102 65, 112 48, 128 42 C 138 38, 152 42, 158 55 C 162 64, 152 75, 138 78 C 122 81, 108 85, 98 82 Z" fill="url(#bodyGrad)"/>
-
-            <!-- Legs -->
             <path d="M 75 145 C 73 162, 70 172, 68 180 C 73 182, 79 182, 82 180 C 82 170, 84 158, 86 148 Z" fill="url(#bodyGrad)"/>
             <path d="M 90 148 C 92 163, 94 172, 96 182 C 101 183, 107 182, 109 180 C 105 168, 101 155, 99 148 Z" fill="url(#bodyGrad)"/>
             <path d="M 120 145 C 124 160, 128 171, 132 180 C 137 181, 143 180, 145 178 C 139 166, 133 152, 129 143 Z" fill="url(#bodyGrad)"/>
-
-            <!-- Golden Hooves -->
             <path d="M 68 175 L 82 175 L 82 180 L 68 180 Z" fill="#ffd43b"/>
             <path d="M 96 177 L 109 177 L 109 182 L 96 182 Z" fill="#ffd43b"/>
             <path d="M 132 175 L 145 175 L 145 178 L 132 178 Z" fill="#ffd43b"/>
-
-            <!-- Silky Hair / Flowing Mane -->
             <path d="M 125 40 C 115 25, 95 30, 90 45 C 88 55, 98 62, 95 75 C 92 88, 75 95, 70 110 C 65 125, 75 135, 68 145 C 62 130, 58 110, 68 92 C 78 74, 82 60, 80 48 C 78 30, 105 15, 125 40 Z" fill="url(#maneGrad)"/>
-
-            <!-- Flowing Tail -->
             <path d="M 68 138 C 50 140, 35 150, 25 168 C 32 168, 42 162, 48 155 C 55 165, 38 182, 22 188 C 38 188, 55 178, 62 162 C 65 155, 66 145, 68 138 Z" fill="url(#maneGrad)"/>
-
-            <!-- Magical Horn -->
             <polygon points="148,46 182,12 158,38" fill="url(#hornGrad)" filter="url(#hornGlow)"/>
-            <!-- Horn Ridge Details -->
             <line x1="152" y1="41" x2="158" y2="34" stroke="#e67e22" stroke-width="1.5"/>
             <line x1="160" y1="32" x2="167" y2="24" stroke="#e67e22" stroke-width="1.5"/>
             <line x1="169" y1="22" x2="175" y2="16" stroke="#e67e22" stroke-width="1.5"/>
-
-            <!-- Sparkle Burst at Horn Tip -->
             <g class="horn-sparkle">
                 <circle cx="182" cy="12" r="4" fill="#ffffff" filter="url(#hornGlow)"/>
                 <path d="M 182 2 L 182 22 M 172 12 L 192 12" stroke="#ffffff" stroke-width="2"/>
             </g>
-
-            <!-- Delicate Eye & Cute Blush -->
             <ellipse cx="146" cy="52" rx="2.5" ry="3.5" fill="#2b2b2b"/>
             <ellipse cx="147" cy="51" rx="0.8" ry="1.2" fill="#ffffff"/>
             <ellipse cx="140" cy="60" rx="5" ry="3" fill="#ff8787" opacity="0.5"/>
         </svg>
-
-        <!-- Stardust Particle Trail Container -->
         <div class="trail-sparkles" id="trailSparkles"></div>
+    </div>
+
+    <!-- Partner's Remote Cursor Indicator -->
+    <div id="remoteCursor" class="remote-cursor hidden">
+        <span class="remote-cursor-icon">✨🦄</span>
+        <span id="remoteCursorName" class="remote-cursor-tag">شادی</span>
     </div>
 
     <!-- Main Container -->
     <main class="main-wrapper">
 
-        <!-- Hero Section: Shadi's Name -->
-        <section class="hero-section">
-            <div class="hero-backdrop"></div>
-
-            <div class="crown-decorator">
-                <svg width="60" height="40" viewBox="0 0 100 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M10 50 L25 20 L50 35 L75 20 L90 50 Z" fill="url(#crownGrad)" stroke="#ffd43b" stroke-width="2"/>
-                    <circle cx="10" cy="50" r="4" fill="#ff8787"/>
-                    <circle cx="25" cy="20" r="5" fill="#ffffff"/>
-                    <circle cx="50" cy="35" r="5" fill="#f783ac"/>
-                    <circle cx="75" cy="20" r="5" fill="#ffffff"/>
-                    <circle cx="90" cy="50" r="4" fill="#ff8787"/>
-                    <defs>
-                        <linearGradient id="crownGrad" x1="0" y1="0" x2="100" y2="50">
-                            <stop offset="0%" stop-color="#ffe3e3"/>
-                            <stop offset="50%" stop-color="#fcc2d7"/>
-                            <stop offset="100%" stop-color="#ffd43b"/>
-                        </linearGradient>
-                    </defs>
-                </svg>
-            </div>
-
+        <!-- Header Section: Shadi's Name & Title -->
+        <header class="hero-header">
             <h1 class="shadi-title" id="shadiTitle">
                 <span class="shadi-glow-bg">شادی</span>
                 <span class="shadi-text">شادی</span>
             </h1>
-
             <p class="hero-subtitle">
-                ✨ فرشته‌ای از تبار نور و ماه، در قلمرو ستاره‌ها ✨
+                🎨 بوم جادویی نقاشی و دل‌نوشته‌های زنده 💖
             </p>
+            <div class="sync-badge">
+                <span class="sync-dot"></span>
+                <span id="syncStatusText">در حال اتصال به بوم مشترک...</span>
+            </div>
+        </header>
 
-            <div class="scroll-indicator">
-                <span class="mouse-icon"></span>
-                <span class="scroll-text">به دنیای رویایی خوش آمدی</span>
+        <!-- Paint Studio Section -->
+        <section class="paint-studio-section">
+            <div class="glass-card studio-card">
+
+                <!-- Paint Toolbar -->
+                <div class="toolbar">
+                    <!-- Tools Group -->
+                    <div class="tool-group">
+                        <span class="tool-group-label">ابزارها:</span>
+                        <button class="tool-btn active" data-tool="brush" title="قلم‌مو (Brush)">
+                            <span class="icon">✏️</span>
+                            <span class="label">قلم‌مو</span>
+                        </button>
+                        <button class="tool-btn" data-tool="heart" title="قلب جادویی (Heart Stamp)">
+                            <span class="icon">💖</span>
+                            <span class="label">قلب</span>
+                        </button>
+                        <button class="tool-btn" data-tool="line" title="خط مستقیم (Line)">
+                            <span class="icon">➖</span>
+                            <span class="label">خط</span>
+                        </button>
+                        <button class="tool-btn" data-tool="rect" title="مستطیل (Rectangle)">
+                            <span class="icon">🔲</span>
+                            <span class="label">مستطیل</span>
+                        </button>
+                        <button class="tool-btn" data-tool="text" title="افزودن متن (Text Tool)">
+                            <span class="icon">🔤</span>
+                            <span class="label">متن</span>
+                        </button>
+                        <button class="tool-btn" data-tool="eraser" title="پاک‌کن (Eraser)">
+                            <span class="icon">🧹</span>
+                            <span class="label">پاک‌کن</span>
+                        </button>
+                    </div>
+
+                    <!-- Color Palette -->
+                    <div class="tool-group">
+                        <span class="tool-group-label">رنگ‌ها:</span>
+                        <div class="color-palette">
+                            <button class="color-swatch active" data-color="#ff7597" style="background: #ff7597;" title="صورتی شادی"></button>
+                            <button class="color-swatch" data-color="#fcc2d7" style="background: #fcc2d7;" title="رز ملایم"></button>
+                            <button class="color-swatch" data-color="#ffd700" style="background: #ffd700;" title="طلایی درخشان"></button>
+                            <button class="color-swatch" data-color="#ff3366" style="background: #ff3366;" title="سرخ عاشقانه"></button>
+                            <button class="color-swatch" data-color="#d0bfff" style="background: #d0bfff;" title="بنفش کهکشانی"></button>
+                            <button class="color-swatch" data-color="#ffffff" style="background: #ffffff;" title="سفید برفی"></button>
+                            <input type="color" id="customColorPicker" class="color-picker-input" value="#ff7597" title="انتخاب رنگ دلخواه">
+                        </div>
+                    </div>
+
+                    <!-- Size Slider -->
+                    <div class="tool-group">
+                        <span class="tool-group-label">ضخامت: <strong id="brushSizeVal">5px</strong></span>
+                        <input type="range" id="brushSizeSlider" min="2" max="60" value="5" class="size-slider">
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="tool-group actions-group">
+                        <button id="clearBtn" class="action-btn danger-btn" title="پاک‌سازی بوم">
+                            <span>🗑️ پاک کردن</span>
+                        </button>
+                        <button id="saveBtn" class="action-btn primary-btn" title="ذخیره نقاشی">
+                            <span>💾 ذخیره تصویر</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Canvas Wrapper -->
+                <div class="canvas-wrapper">
+                    <canvas id="paintCanvas" width="1000" height="600"></canvas>
+                    <div class="canvas-hint">روی بوم نقاشی بکشید یا متن بنویسید — هر تغییری آنی برای هر دو نفر نمایش داده می‌شود ✨</div>
+                </div>
+
             </div>
         </section>
 
-        <!-- Narrative Section: Heartfelt Romantic Story -->
-        <section class="story-section">
-            <div class="glass-card story-card">
-                <div class="card-glow-border"></div>
-
-                <header class="story-header">
-                    <span class="section-tag">داستان افسانه‌ای عشق</span>
-                    <h2 class="story-heading">افسانه شادی و تک‌شاخ ماه</h2>
-                    <div class="sparkle-divider">
-                        <span>✨</span><hr><span>💖</span><hr><span>✨</span>
-                    </div>
-                </header>
-
-                <article class="story-content">
-                    <p class="paragraph p1">
-                        در کهکشان‌های دوردست، آن‌جا که ستاره‌ها قصیده محبت می‌سرودند، قلمرویی وجود داشت غرق در آرامش و روشنی. اما زیباترین رازی که آسمان‌ها در سینه داشتند، آفرینش موجودی بود با قلبی از جنس کریستال و لبخندی که نور سپیده‌دم را خجل می‌کرد... <strong>«شادی»</strong>.
-                    </p>
-
-                    <p class="paragraph p2">
-                        شادی تنها یک نام نبود؛ نغمه‌ای بود که با هر بار شنیدنش، غنچه‌های لاله سر از خاک برمی‌آوردند و آسمان، جامه‌ای از سپیده‌دمِ صورتی به تن می‌کرد. در همان روزهای نخستین که قدم به جهان گذاشت، نجابت و مهربانیِ بی‌حدش، سپیدترین و باشکوه‌ترین تک‌شاخِ کهکشان را شیفته خویش ساخت.
-                    </p>
-
-                    <p class="paragraph p3">
-                        تک‌شاخ افسانه‌ای، با شاخی بلورین از جنس نور و بال‌هایی شفاف چون برفی تازه، نگهبان رویاهای او شد. او دریافته بود که شادی، ارزشمندترین گوهر تمامیِ جهان‌هاست. هر کجا که شادی قدم می‌گذارد، اسب بالدار به آرامی در پیِ او روان می‌شود، ستاره‌های الماس‌گون را بر مسیرش می‌افشاند و ردپایش را به نور می‌آراید.
-                    </p>
-
-                    <p class="paragraph p4">
-                        زیباییِ شادی، زیباییِ یک رخسار نیست؛ بلکه شکوهِ قلبی است که تمام جهان در طواف مهربانی‌اش به گرد هم آمده‌اند. و این افسانه تا ابد در قلب ستاره‌ها باقی خواهد ماند... که هیچ نوایی زیباتر از زمزمه‌ی نام <em>«شادی»</em> در تپش‌های عشق نیست.
-                    </p>
-                </article>
-
-                <div class="story-footer">
-                    <div class="magic-seal">
-                        <span class="seal-icon">🌸</span>
-                        <span class="seal-text">نگاشته شده با جاودانگی عشق</span>
-                    </div>
+        <!-- Text Input Modal / Overlay -->
+        <div id="textModal" class="modal-overlay hidden">
+            <div class="glass-card modal-card">
+                <h3>✍️ افزودن متن به بوم</h3>
+                <p>متن خود را وارد کنید تا در محل کلیک شده ثبت شود:</p>
+                <input type="text" id="textInput" class="custom-input" placeholder="مثلاً: شادی عزیزم دوستت دارم..." autofocus>
+                <div class="modal-actions">
+                    <button id="confirmTextBtn" class="action-btn primary-btn">ثبت متن ✨</button>
+                    <button id="cancelTextBtn" class="action-btn secondary-btn">انصراف</button>
                 </div>
             </div>
-        </section>
-
-        <!-- Interactive Love Deck Section ("رازهای دلدادگی") -->
-        <section class="secrets-section">
-            <h3 class="section-title">✨ رازهای کوچک دلدادگی ✨</h3>
-            <p class="section-desc">روی کارت‌های جادویی کلیک کن تا رازهای ماه برای شادی فاش شوند</p>
-
-            <div class="cards-grid">
-                <!-- Card 1 -->
-                <div class="love-card" data-card="1">
-                    <div class="card-inner">
-                        <div class="card-front">
-                            <span class="card-icon">💎</span>
-                            <h4>راز اول</h4>
-                            <p>برای لمس کلیک کن</p>
-                        </div>
-                        <div class="card-back">
-                            <p>«لبخند تو، لبخند تمام فرشته‌های آسمان است. وقتی می‌خندی، دنیا غرق در نور می‌شود.»</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="love-card" data-card="2">
-                    <div class="card-inner">
-                        <div class="card-front">
-                            <span class="card-icon">🦄</span>
-                            <h4>راز دوم</h4>
-                            <p>برای لمس کلیک کن</p>
-                        </div>
-                        <div class="card-back">
-                            <p>«تک‌شاخ رویایی همواره پاسدار آرامش توست؛ زیرا تو پاک‌ترین رویای تمام جهان‌هایی.»</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="love-card" data-card="3">
-                    <div class="card-inner">
-                        <div class="card-front">
-                            <span class="card-icon">🌟</span>
-                            <h4>راز سوم</h4>
-                            <p>برای لمس کلیک کن</p>
-                        </div>
-                        <div class="card-back">
-                            <p>«در میان میلیاردهای ستاره در این کهکشان بزرگ، چشم‌های تو درخشان‌ترین کویر نوری من است.»</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        </div>
 
         <!-- Grand Finale Section: "دوست دارم ❤️" -->
         <section class="finale-section">
             <div class="glass-card finale-card">
                 <div class="heart-pulse-bg"></div>
                 <div class="finale-content">
-                    <p class="finale-pretitle">تا ابد و یک روز در کنار تو...</p>
+                    <p class="finale-pretitle">همواره در هر تپش قلب...</p>
                     <div class="love-phrase-wrapper">
                         <h2 class="love-phrase">دوست دارم</h2>
                         <span class="red-heart-emoji" id="mainHeart">❤️</span>
                     </div>
                     <p class="love-subtext">زیباترین هدیه زندگی من، شادی عزیزم</p>
-
                     <button id="heartBurstBtn" class="magic-btn">
                         <span>✨ نثار قلب تو ✨</span>
                     </button>

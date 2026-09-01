@@ -1,398 +1,655 @@
-/**
- * ==========================================================================
- * ✨ SHADI & THE CELESTIAL UNICORN - DYNAMIC SCRIPT & INTERACTION ENGINE ✨
- * ==========================================================================
- */
+/* ========================================================
+   SHADI CELESTIAL SOFT-PINK REALTIME COLLABORATIVE PAINT APP
+   ======================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Initialize Starfield & Shooting Stars Canvas ---
-    initStarfieldCanvas();
 
-    // --- Initialize Unicorn Cursor Follower with Spring/LERP Physics ---
-    initUnicornFollower();
+    /* ----------------------------------------------------
+       1. STARFIELD CANVAS BACKDROP
+       ---------------------------------------------------- */
+    const starfieldCanvas = document.getElementById('starfieldCanvas');
+    const starCtx = starfieldCanvas.getContext('2d');
 
-    // --- Initialize Secret Love Cards ---
-    initLoveCards();
+    let stars = [];
+    let shootingStars = [];
+    const numStars = 140;
 
-    // --- Initialize Heart Burst Interactive Effects ---
-    initHeartBurstEffects();
+    function resizeStarfield() {
+        starfieldCanvas.width = window.innerWidth;
+        starfieldCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeStarfield);
+    resizeStarfield();
 
-    // --- Initialize Web Audio Ambient Sound Generator ---
-    initAudioSynthesizer();
-});
+    class Star {
+        constructor() {
+            this.reset();
+        }
+        reset() {
+            this.x = Math.random() * starfieldCanvas.width;
+            this.y = Math.random() * starfieldCanvas.height;
+            this.size = Math.random() * 2 + 0.5;
+            this.baseAlpha = Math.random() * 0.7 + 0.3;
+            this.alpha = this.baseAlpha;
+            this.twinkleSpeed = Math.random() * 0.03 + 0.005;
+            this.color = ['#ffffff', '#fcc2d7', '#ff7597', '#ffd700', '#da77f2'][Math.floor(Math.random() * 5)];
+        }
+        update() {
+            this.alpha += this.twinkleSpeed;
+            if (this.alpha > 1 || this.alpha < 0.2) {
+                this.twinkleSpeed = -this.twinkleSpeed;
+            }
+        }
+        draw() {
+            starCtx.save();
+            starCtx.globalAlpha = Math.max(0.1, Math.min(1, this.alpha));
+            starCtx.fillStyle = this.color;
+            starCtx.shadowBlur = this.size * 4;
+            starCtx.shadowColor = this.color;
+            starCtx.beginPath();
+            starCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            starCtx.fill();
+            starCtx.restore();
+        }
+    }
 
-/* ==========================================================================
-   1. STARFIELD & SHOOTING STARS CANVAS ENGINE
-   ========================================================================== */
-function initStarfieldCanvas() {
-    const canvas = document.getElementById('starfieldCanvas');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
+    class ShootingStar {
+        constructor() {
+            this.reset();
+        }
+        reset() {
+            this.x = Math.random() * starfieldCanvas.width * 0.8;
+            this.y = Math.random() * (starfieldCanvas.height * 0.4);
+            this.length = Math.random() * 80 + 40;
+            this.speed = Math.random() * 8 + 6;
+            this.angle = Math.PI / 4;
+            this.opacity = 1;
+            this.active = true;
+        }
+        update() {
+            this.x += Math.cos(this.angle) * this.speed;
+            this.y += Math.sin(this.angle) * this.speed;
+            this.opacity -= 0.015;
+            if (this.opacity <= 0 || this.x > starfieldCanvas.width || this.y > starfieldCanvas.height) {
+                this.active = false;
+            }
+        }
+        draw() {
+            if (!this.active) return;
+            starCtx.save();
+            starCtx.globalAlpha = this.opacity;
+            const grad = starCtx.createLinearGradient(
+                this.x, this.y,
+                this.x - Math.cos(this.angle) * this.length,
+                this.y - Math.sin(this.angle) * this.length
+            );
+            grad.addColorStop(0, '#ffffff');
+            grad.addColorStop(0.5, '#ff7597');
+            grad.addColorStop(1, 'transparent');
 
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+            starCtx.strokeStyle = grad;
+            starCtx.lineWidth = 2;
+            starCtx.beginPath();
+            starCtx.moveTo(this.x, this.y);
+            starCtx.lineTo(
+                this.x - Math.cos(this.angle) * this.length,
+                this.y - Math.sin(this.angle) * this.length
+            );
+            starCtx.stroke();
+            starCtx.restore();
+        }
+    }
 
-    window.addEventListener('resize', () => {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
-        createStars();
+    for (let i = 0; i < numStars; i++) {
+        stars.push(new Star());
+    }
+
+    setInterval(() => {
+        if (Math.random() < 0.4 && shootingStars.length < 3) {
+            shootingStars.push(new ShootingStar());
+        }
+    }, 2000);
+
+    function animateStarfield() {
+        starCtx.clearRect(0, 0, starfieldCanvas.width, starfieldCanvas.height);
+        stars.forEach(s => { s.update(); s.draw(); });
+        shootingStars = shootingStars.filter(ss => ss.active);
+        shootingStars.forEach(ss => { ss.update(); ss.draw(); });
+        requestAnimationFrame(animateStarfield);
+    }
+    animateStarfield();
+
+
+    /* ----------------------------------------------------
+       2. DYNAMIC UNICORN CURSOR FOLLOWER
+       ---------------------------------------------------- */
+    const unicornFollower = document.getElementById('unicornFollower');
+    const trailContainer = document.getElementById('trailSparkles');
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let unicornX = mouseX;
+    let unicornY = mouseY;
+    let lastUnicornX = unicornX;
+
+    window.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        sendCursorPosition(mouseX, mouseY);
     });
 
-    const numStars = Math.floor((width * height) / 3000);
-    const stars = [];
-    const shootingStars = [];
+    function createSparkle(x, y) {
+        if (Math.random() > 0.35) return;
+        const sparkle = document.createElement('div');
+        sparkle.className = 'sparkle-particle';
+        const colors = ['#ffffff', '#ff7597', '#fcc2d7', '#ffd700', '#da77f2'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        const size = Math.random() * 8 + 3;
 
-    const starColors = ['#ffffff', '#ffb3c6', '#ffd43b', '#f7aef8', '#eebefa'];
+        sparkle.style.left = `${x + (Math.random() * 20 - 10)}px`;
+        sparkle.style.top = `${y + (Math.random() * 20 - 10)}px`;
+        sparkle.style.width = `${size}px`;
+        sparkle.style.height = `${size}px`;
+        sparkle.style.backgroundColor = color;
+        sparkle.style.boxShadow = `0 0 8px ${color}`;
 
-    function createStars() {
-        stars.length = 0;
-        for (let i = 0; i < numStars; i++) {
-            stars.push({
-                x: Math.random() * width,
-                y: Math.random() * height,
-                radius: Math.random() * 1.6 + 0.3,
-                color: starColors[Math.floor(Math.random() * starColors.length)],
-                alpha: Math.random(),
-                speed: Math.random() * 0.02 + 0.005,
-                twinkleDirection: Math.random() > 0.5 ? 1 : -1
-            });
-        }
+        trailContainer.appendChild(sparkle);
+        setTimeout(() => sparkle.remove(), 900);
     }
 
-    function spawnShootingStar() {
-        if (shootingStars.length < 3 && Math.random() < 0.03) {
-            const startX = Math.random() * width * 0.8;
-            const startY = Math.random() * height * 0.5;
-            const length = Math.random() * 80 + 100;
-            const angle = (Math.PI / 180) * (Math.random() * 15 + 30); // 30-45 deg
+    function animateUnicorn() {
+        const ease = 0.12;
+        unicornX += (mouseX - unicornX) * ease;
+        unicornY += (mouseY - unicornY) * ease;
 
-            shootingStars.push({
-                x: startX,
-                y: startY,
-                length: length,
-                speed: Math.random() * 6 + 8,
-                angle: angle,
-                dx: Math.cos(angle),
-                dy: Math.sin(angle),
-                life: 1,
-                decay: Math.random() * 0.015 + 0.015,
-                thickness: Math.random() * 1.5 + 1
-            });
+        const vx = unicornX - lastUnicornX;
+        lastUnicornX = unicornX;
+        const tilt = Math.max(-25, Math.min(25, vx * 1.5));
+
+        unicornFollower.style.transform = `translate(${unicornX}px, ${unicornY}px) rotate(${tilt}deg)`;
+
+        if (Math.abs(vx) > 0.5) {
+            createSparkle(unicornX, unicornY);
         }
+
+        requestAnimationFrame(animateUnicorn);
     }
+    animateUnicorn();
 
-    createStars();
 
-    function animateCanvas() {
-        ctx.clearRect(0, 0, width, height);
+    /* ----------------------------------------------------
+       3. WEBSOCKET REAL-TIME SYNC & BACKEND CONNECTIVITY
+       ---------------------------------------------------- */
+    const syncStatusText = document.getElementById('syncStatusText');
+    const remoteCursor = document.getElementById('remoteCursor');
+    let ws;
 
-        // --- Render Twinkling Stars ---
-        for (let i = 0; i < stars.length; i++) {
-            const s = stars[i];
-            s.alpha += s.speed * s.twinkleDirection;
-            if (s.alpha >= 1) {
-                s.alpha = 1;
-                s.twinkleDirection = -1;
-            } else if (s.alpha <= 0.1) {
-                s.alpha = 0.1;
-                s.twinkleDirection = 1;
+    function connectWebSocket() {
+        const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+        const wsUrl = `${protocol}//${window.location.host}`;
+        ws = new WebSocket(wsUrl);
+
+        ws.onopen = () => {
+            console.log('[WS] Connected to paint server.');
+            syncStatusText.textContent = 'متصل به بوم مشترک ✨ (آماده هم‌زمانی)';
+            syncStatusText.style.color = '#51cf66';
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'init') {
+                    actionHistory = data.actions || [];
+                    redrawAllCanvasActions();
+                } else if (data.type === 'draw_action') {
+                    actionHistory.push(data.action);
+                    renderAction(data.action);
+                } else if (data.type === 'clear') {
+                    actionHistory = [];
+                    clearCanvasLocal();
+                } else if (data.type === 'remote_cursor') {
+                    updateRemoteCursor(data.x, data.y, data.userName);
+                }
+            } catch (err) {
+                console.error('[WS] Error parsing message:', err);
             }
+        };
 
+        ws.onclose = () => {
+            syncStatusText.textContent = 'قطع ارتباط - تلاش مجدد...';
+            syncStatusText.style.color = '#ff8787';
+            setTimeout(connectWebSocket, 3000);
+        };
+    }
+
+    function broadcastAction(action) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'draw_action', action }));
+        }
+    }
+
+    function broadcastClear() {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'clear' }));
+        }
+    }
+
+    function sendCursorPosition(x, y) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'cursor_move', x, y, userName: 'همراه شما' }));
+        }
+    }
+
+    function updateRemoteCursor(x, y, name) {
+        remoteCursor.classList.remove('hidden');
+        remoteCursor.style.transform = `translate(${x}px, ${y}px)`;
+        if (name) {
+            document.getElementById('remoteCursorName').textContent = name;
+        }
+    }
+
+    connectWebSocket();
+
+
+    /* ----------------------------------------------------
+       4. PAINT CANVAS ENGINE & TOOLS
+       ---------------------------------------------------- */
+    const canvas = document.getElementById('paintCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // UI Tools Controls
+    const toolBtns = document.querySelectorAll('.tool-btn');
+    const colorSwatches = document.querySelectorAll('.color-swatch');
+    const customColorPicker = document.getElementById('customColorPicker');
+    const brushSizeSlider = document.getElementById('brushSizeSlider');
+    const brushSizeVal = document.getElementById('brushSizeVal');
+    const clearBtn = document.getElementById('clearBtn');
+    const saveBtn = document.getElementById('saveBtn');
+
+    // Text Modal Controls
+    const textModal = document.getElementById('textModal');
+    const textInput = document.getElementById('textInput');
+    const confirmTextBtn = document.getElementById('confirmTextBtn');
+    const cancelTextBtn = document.getElementById('cancelTextBtn');
+    let pendingTextCoords = null;
+
+    // Active tool state
+    let currentTool = 'brush'; // 'brush', 'heart', 'line', 'rect', 'text', 'eraser'
+    let currentColor = '#ff7597';
+    let currentSize = 5;
+
+    let isDrawing = false;
+    let startX = 0;
+    let startY = 0;
+    let currentStroke = [];
+    let actionHistory = [];
+
+    function redrawAllCanvasActions() {
+        clearCanvasLocal();
+        actionHistory.forEach(act => renderAction(act));
+    }
+
+    // Setup Canvas scale & handle resize without erasing artwork
+    function fitCanvasResolution() {
+        const rect = canvas.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            redrawAllCanvasActions();
+        }
+    }
+    fitCanvasResolution();
+    window.addEventListener('resize', fitCanvasResolution);
+
+    // Event Listeners for Tool Selection
+    toolBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            toolBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentTool = btn.dataset.tool;
+        });
+    });
+
+    colorSwatches.forEach(swatch => {
+        swatch.addEventListener('click', () => {
+            colorSwatches.forEach(s => s.classList.remove('active'));
+            swatch.classList.add('active');
+            currentColor = swatch.dataset.color;
+            customColorPicker.value = currentColor;
+        });
+    });
+
+    customColorPicker.addEventListener('input', (e) => {
+        currentColor = e.target.value;
+        colorSwatches.forEach(s => s.classList.remove('active'));
+    });
+
+    brushSizeSlider.addEventListener('input', (e) => {
+        currentSize = parseInt(e.target.value);
+        brushSizeVal.textContent = `${currentSize}px`;
+    });
+
+    clearBtn.addEventListener('click', () => {
+        if (confirm('آیا از پاک کردن کل بوم اطمینان دارید؟')) {
+            actionHistory = [];
+            clearCanvasLocal();
+            broadcastClear();
+        }
+    });
+
+    saveBtn.addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = 'shadi-celestial-artwork.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+
+    // Canvas Pointer Event Helpers
+    function getCanvasCoords(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return {
+            x: clientX - rect.left,
+            y: clientY - rect.top
+        };
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+        const coords = getCanvasCoords(e);
+        startX = coords.x;
+        startY = coords.y;
+
+        if (currentTool === 'text') {
+            pendingTextCoords = coords;
+            textModal.classList.remove('hidden');
+            textInput.value = '';
+            textInput.focus();
+            return;
+        }
+
+        if (currentTool === 'heart') {
+            const action = {
+                tool: 'heart',
+                x: coords.x,
+                y: coords.y,
+                size: currentSize * 6,
+                color: currentColor
+            };
+            actionHistory.push(action);
+            renderAction(action);
+            broadcastAction(action);
+            return;
+        }
+
+        isDrawing = true;
+        currentStroke = [{ x: coords.x, y: coords.y }];
+    });
+
+    canvas.addEventListener('pointermove', (e) => {
+        if (!isDrawing) return;
+        const coords = getCanvasCoords(e);
+
+        if (currentTool === 'brush' || currentTool === 'eraser') {
+            currentStroke.push({ x: coords.x, y: coords.y });
+
+            // Draw segment locally immediately
             ctx.save();
-            ctx.globalAlpha = s.alpha;
-            ctx.fillStyle = s.color;
             ctx.beginPath();
-            ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Glow for larger stars
-            if (s.radius > 1.2) {
-                ctx.shadowBlur = 8;
-                ctx.shadowColor = s.color;
-                ctx.fill();
-            }
-            ctx.restore();
-        }
-
-        // --- Render Shooting Stars ---
-        spawnShootingStar();
-        for (let i = shootingStars.length - 1; i >= 0; i--) {
-            const ss = shootingStars[i];
-            ss.x += ss.dx * ss.speed;
-            ss.y += ss.dy * ss.speed;
-            ss.life -= ss.decay;
-
-            if (ss.life <= 0 || ss.x > width || ss.y > height) {
-                shootingStars.splice(i, 1);
-                continue;
-            }
-
-            ctx.save();
-            ctx.globalAlpha = ss.life;
-            const tailX = ss.x - ss.dx * ss.length;
-            const tailY = ss.y - ss.dy * ss.length;
-
-            const grad = ctx.createLinearGradient(ss.x, ss.y, tailX, tailY);
-            grad.addColorStop(0, '#ffffff');
-            grad.addColorStop(0.3, '#ffb3c6');
-            grad.addColorStop(1, 'rgba(255, 179, 198, 0)');
-
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = ss.thickness;
+            const p1 = currentStroke[currentStroke.length - 2];
+            const p2 = currentStroke[currentStroke.length - 1];
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = currentTool === 'eraser' ? '#0d0414' : currentColor;
+            ctx.lineWidth = currentSize;
             ctx.lineCap = 'round';
-
-            ctx.beginPath();
-            ctx.moveTo(ss.x, ss.y);
-            ctx.lineTo(tailX, tailY);
+            ctx.lineJoin = 'round';
+            if (currentTool === 'brush') {
+                ctx.shadowBlur = currentSize;
+                ctx.shadowColor = currentColor;
+            }
             ctx.stroke();
             ctx.restore();
         }
-
-        requestAnimationFrame(animateCanvas);
-    }
-
-    animateCanvas();
-}
-
-/* ==========================================================================
-   2. UNICORN CURSOR FOLLOWER WITH LERP PHYSICS & TRAIL SPARKLES
-   ========================================================================== */
-function initUnicornFollower() {
-    const follower = document.getElementById('unicornFollower');
-    if (!follower) return;
-
-    let targetX = window.innerWidth / 2;
-    let targetY = window.innerHeight / 2;
-    let currentX = targetX;
-    let currentY = targetY;
-
-    let lastSparkleTime = 0;
-
-    // Track mouse / touch position
-    window.addEventListener('mousemove', (e) => {
-        targetX = e.clientX;
-        targetY = e.clientY;
     });
 
-    window.addEventListener('touchmove', (e) => {
-        if (e.touches.length > 0) {
-            targetX = e.touches[0].clientX;
-            targetY = e.touches[0].clientY;
+    canvas.addEventListener('pointerup', (e) => {
+        if (!isDrawing) return;
+        isDrawing = false;
+        const coords = getCanvasCoords(e);
+
+        if (currentTool === 'brush' || currentTool === 'eraser') {
+            const action = {
+                tool: currentTool,
+                points: currentStroke,
+                color: currentTool === 'eraser' ? '#0d0414' : currentColor,
+                size: currentSize
+            };
+            actionHistory.push(action);
+            broadcastAction(action);
+        } else if (currentTool === 'line') {
+            const action = {
+                tool: 'line',
+                x1: startX,
+                y1: startY,
+                x2: coords.x,
+                y2: coords.y,
+                color: currentColor,
+                size: currentSize
+            };
+            actionHistory.push(action);
+            renderAction(action);
+            broadcastAction(action);
+        } else if (currentTool === 'rect') {
+            const action = {
+                tool: 'rect',
+                x: startX,
+                y: startY,
+                w: coords.x - startX,
+                h: coords.y - startY,
+                color: currentColor,
+                size: currentSize
+            };
+            actionHistory.push(action);
+            renderAction(action);
+            broadcastAction(action);
         }
-    }, { passive: true });
-
-    function updateFollower() {
-        // Linear Interpolation (LERP) for smooth, floaty physics
-        const ease = 0.08;
-        const dx = targetX - currentX;
-        const dy = targetY - currentY;
-
-        currentX += dx * ease;
-        currentY += dy * ease;
-
-        // Dynamic tilt based on movement direction
-        const tilt = Math.max(-15, Math.min(15, dx * 0.15));
-
-        follower.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) rotate(${tilt}deg)`;
-
-        // Emit sparkling trail particles if moving
-        const distMoved = Math.hypot(dx, dy);
-        const now = Date.now();
-        if (distMoved > 2 && now - lastSparkleTime > 60) {
-            spawnTrailParticle(currentX, currentY);
-            lastSparkleTime = now;
-        }
-
-        requestAnimationFrame(updateFollower);
-    }
-
-    requestAnimationFrame(updateFollower);
-}
-
-function spawnTrailParticle(x, y) {
-    const particle = document.createElement('div');
-    particle.className = 'trail-particle';
-
-    const symbols = ['✦', '✨', '💖', '⭐', '🌸'];
-    const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-
-    particle.textContent = symbol;
-    particle.style.left = `${x}px`;
-    particle.style.top = `${y}px`;
-    particle.style.fontSize = `${Math.random() * 14 + 10}px`;
-
-    const colors = ['#ff8787', '#f783ac', '#da77f2', '#ffd43b', '#ffffff'];
-    particle.style.color = colors[Math.floor(Math.random() * colors.length)];
-
-    // Random spread direction
-    const angle = Math.random() * Math.PI * 2;
-    const distance = Math.random() * 30 + 15;
-    const dx = Math.cos(angle) * distance;
-    const dy = Math.sin(angle) * distance;
-
-    particle.style.setProperty('--dx', `${dx}px`);
-    particle.style.setProperty('--dy', `${dy}px`);
-
-    document.body.appendChild(particle);
-
-    setTimeout(() => {
-        if (particle.parentNode) {
-            particle.parentNode.removeChild(particle);
-        }
-    }, 900);
-}
-
-/* ==========================================================================
-   3. INTERACTIVE SECRET LOVE CARDS
-   ========================================================================== */
-function initLoveCards() {
-    const cards = document.querySelectorAll('.love-card');
-    cards.forEach((card) => {
-        card.addEventListener('click', () => {
-            card.classList.toggle('flipped');
-
-            // Sparkle burst on flip
-            const rect = card.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            triggerHeartBurst(centerX, centerY, 8);
-        });
     });
-}
 
-/* ==========================================================================
-   4. HEART BURST EFFECTS
-   ========================================================================== */
-function initHeartBurstEffects() {
-    const burstBtn = document.getElementById('heartBurstBtn');
-    const mainHeart = document.getElementById('mainHeart');
-
-    if (burstBtn) {
-        burstBtn.addEventListener('click', (e) => {
-            const rect = burstBtn.getBoundingClientRect();
-            const x = rect.left + rect.width / 2;
-            const y = rect.top + rect.height / 2;
-            triggerHeartBurst(x, y, 35);
-        });
-    }
-
-    if (mainHeart) {
-        mainHeart.addEventListener('click', (e) => {
-            const rect = mainHeart.getBoundingClientRect();
-            const x = rect.left + rect.width / 2;
-            const y = rect.top + rect.height / 2;
-            triggerHeartBurst(x, y, 25);
-        });
-    }
-
-    // Also burst on clicking anywhere on background
-    window.addEventListener('click', (e) => {
-        // Don't duplicate if button or card clicked
-        if (e.target.closest('.magic-btn') || e.target.closest('.love-card') || e.target.closest('.audio-btn')) return;
-        triggerHeartBurst(e.clientX, e.clientY, 12);
+    // Confirm Text Modal Insertion
+    confirmTextBtn.addEventListener('click', () => {
+        const text = textInput.value.trim();
+        if (text && pendingTextCoords) {
+            const action = {
+                tool: 'text',
+                text: text,
+                x: pendingTextCoords.x,
+                y: pendingTextCoords.y,
+                color: currentColor,
+                size: Math.max(16, currentSize * 3)
+            };
+            actionHistory.push(action);
+            renderAction(action);
+            broadcastAction(action);
+        }
+        textModal.classList.add('hidden');
+        pendingTextCoords = null;
     });
-}
 
-function triggerHeartBurst(x, y, count = 20) {
-    const heartTypes = ['💖', '💕', '💗', '✨', '🌸', '❤️'];
+    cancelTextBtn.addEventListener('click', () => {
+        textModal.classList.add('hidden');
+        pendingTextCoords = null;
+    });
 
-    for (let i = 0; i < count; i++) {
-        const heart = document.createElement('div');
-        heart.className = 'trail-particle';
-        heart.textContent = heartTypes[Math.floor(Math.random() * heartTypes.length)];
-        heart.style.left = `${x}px`;
-        heart.style.top = `${y}px`;
-        heart.style.fontSize = `${Math.random() * 20 + 16}px`;
+    // Local Canvas Action Renderer
+    function renderAction(action) {
+        if (!action) return;
+        ctx.save();
 
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 120 + 50;
-        const dx = Math.cos(angle) * speed;
-        const dy = Math.sin(angle) * speed;
-
-        heart.style.setProperty('--dx', `${dx}px`);
-        heart.style.setProperty('--dy', `${dy}px`);
-
-        document.body.appendChild(heart);
-
-        setTimeout(() => {
-            if (heart.parentNode) {
-                heart.parentNode.removeChild(heart);
+        if (action.tool === 'brush' || action.tool === 'eraser') {
+            if (action.points && action.points.length > 0) {
+                ctx.beginPath();
+                ctx.moveTo(action.points[0].x, action.points[0].y);
+                for (let i = 1; i < action.points.length; i++) {
+                    ctx.lineTo(action.points[i].x, action.points[i].y);
+                }
+                ctx.strokeStyle = action.color;
+                ctx.lineWidth = action.size;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                if (action.tool === 'brush') {
+                    ctx.shadowBlur = action.size;
+                    ctx.shadowColor = action.color;
+                }
+                ctx.stroke();
             }
-        }, 900);
+        } else if (action.tool === 'line') {
+            ctx.beginPath();
+            ctx.moveTo(action.x1, action.y1);
+            ctx.lineTo(action.x2, action.y2);
+            ctx.strokeStyle = action.color;
+            ctx.lineWidth = action.size;
+            ctx.lineCap = 'round';
+            ctx.shadowBlur = action.size;
+            ctx.shadowColor = action.color;
+            ctx.stroke();
+        } else if (action.tool === 'rect') {
+            ctx.beginPath();
+            ctx.rect(action.x, action.y, action.w, action.h);
+            ctx.strokeStyle = action.color;
+            ctx.lineWidth = action.size;
+            ctx.shadowBlur = action.size;
+            ctx.shadowColor = action.color;
+            ctx.stroke();
+        } else if (action.tool === 'heart') {
+            drawHeartPath(ctx, action.x, action.y, action.size, action.color);
+        } else if (action.tool === 'text') {
+            ctx.font = `${action.size}px 'Vazirmatn', sans-serif`;
+            ctx.fillStyle = action.color;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = action.color;
+            ctx.fillText(action.text, action.x, action.y);
+        }
+
+        ctx.restore();
     }
-}
 
-/* ==========================================================================
-   5. AMBIENT WEB AUDIO SYNTHESIZER
-   ========================================================================== */
-function initAudioSynthesizer() {
-    const btn = document.getElementById('musicToggleBtn');
-    if (!btn) return;
+    function drawHeartPath(c, x, y, size, color) {
+        c.save();
+        c.beginPath();
+        const topCurveHeight = size * 0.3;
+        c.moveTo(x, y + topCurveHeight);
+        c.bezierCurveTo(x, y, x - size / 2, y, x - size / 2, y + topCurveHeight);
+        c.bezierCurveTo(x - size / 2, y + (size + topCurveHeight) / 2, x, y + size, x, y + size);
+        c.bezierCurveTo(x, y + size, x + size / 2, y + (size + topCurveHeight) / 2, x + size / 2, y + topCurveHeight);
+        c.bezierCurveTo(x + size / 2, y, x, y, x, y + topCurveHeight);
+        c.closePath();
+        c.fillStyle = color;
+        c.shadowBlur = 15;
+        c.shadowColor = color;
+        c.fill();
+        c.restore();
+    }
 
+    function clearCanvasLocal() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#0d0414';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    clearCanvasLocal();
+
+
+    /* ----------------------------------------------------
+       5. AUDIO SYNTHESIZER & HEART BURST INTERACTIVITY
+       ---------------------------------------------------- */
+    const musicBtn = document.getElementById('musicToggleBtn');
     let audioCtx = null;
-    let isPlaying = false;
-    let timerId = null;
+    let isPlayingAudio = false;
+    let audioInterval = null;
 
-    btn.addEventListener('click', () => {
-        if (!isPlaying) {
-            startSynthesizer();
-            btn.classList.add('playing');
-            btn.querySelector('.audio-text').textContent = 'توقف طنین';
-            isPlaying = true;
-        } else {
-            stopSynthesizer();
-            btn.classList.remove('playing');
-            btn.querySelector('.audio-text').textContent = 'طنین رویایی';
-            isPlaying = false;
-        }
-    });
+    const chords = [
+        [261.63, 329.63, 392.00, 523.25], // C Major / Soft synth
+        [220.00, 261.63, 329.63, 440.00], // A Minor / Dreamy
+        [174.61, 220.00, 261.63, 349.23], // F Major / Warm
+        [196.00, 246.94, 293.66, 392.00]  // G Major
+    ];
 
-    function startSynthesizer() {
+    function playCelestialChord() {
+        if (!audioCtx) return;
+        const chord = chords[Math.floor(Math.random() * chords.length)];
+        chord.forEach((freq, idx) => {
+            setTimeout(() => {
+                try {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq * 1.5, audioCtx.currentTime);
+
+                    gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.08, audioCtx.currentTime + 1.2);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 4.0);
+
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 4.2);
+                } catch (e) {}
+            }, idx * 280);
+        });
+    }
+
+    musicBtn.addEventListener('click', () => {
         if (!audioCtx) {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            audioCtx = new AudioContext();
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
-
         if (audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
 
-        // Dreamy pentatonic chord frequencies (C major / A minor celestial notes)
-        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
-
-        function playCelestialNote() {
-            if (!isPlaying) return;
-
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-
-            const freq = notes[Math.floor(Math.random() * notes.length)];
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-            // Soft envelope
-            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.8);
-            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.5);
-
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            osc.start();
-            osc.stop(audioCtx.currentTime + 3.6);
-
-            // Schedule next note
-            const nextTime = Math.random() * 800 + 400;
-            timerId = setTimeout(playCelestialNote, nextTime);
+        if (isPlayingAudio) {
+            clearInterval(audioInterval);
+            isPlayingAudio = false;
+            musicBtn.querySelector('.audio-text').textContent = 'طنین رویایی';
+            musicBtn.style.background = 'rgba(42, 14, 48, 0.65)';
+        } else {
+            isPlayingAudio = true;
+            playCelestialChord();
+            audioInterval = setInterval(playCelestialChord, 4500);
+            musicBtn.querySelector('.audio-text').textContent = 'موسیقی در حال پخش... ✨';
+            musicBtn.style.background = 'rgba(255, 117, 151, 0.4)';
         }
+    });
 
-        playCelestialNote();
+    // Heart Burst Trigger
+    const heartBurstBtn = document.getElementById('heartBurstBtn');
+    const mainHeart = document.getElementById('mainHeart');
+
+    function triggerHeartBurst(e) {
+        const x = e ? e.clientX : window.innerWidth / 2;
+        const y = e ? e.clientY : window.innerHeight / 2;
+
+        for (let i = 0; i < 24; i++) {
+            const heart = document.createElement('div');
+            heart.className = 'burst-heart';
+            heart.textContent = ['❤️', '💖', '✨', '🌸', '💕', '⭐'][Math.floor(Math.random() * 6)];
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+
+            const angle = Math.random() * Math.PI * 2;
+            const dist = Math.random() * 220 + 80;
+            const dx = Math.cos(angle) * dist;
+            const dy = Math.sin(angle) * dist;
+            const rot = (Math.random() - 0.5) * 360;
+
+            heart.style.setProperty('--dx', `${dx}px`);
+            heart.style.setProperty('--dy', `${dy}px`);
+            heart.style.setProperty('--rot', `${rot}deg`);
+
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 1400);
+        }
     }
 
-    function stopSynthesizer() {
-        if (timerId) clearTimeout(timerId);
-        if (audioCtx && audioCtx.state === 'running') {
-            audioCtx.suspend();
-        }
-    }
-}
+    heartBurstBtn.addEventListener('click', triggerHeartBurst);
+    mainHeart.addEventListener('click', triggerHeartBurst);
+});
