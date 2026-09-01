@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Soft-Pink Shimmering Unicorn & Starry Canvas Web Experience
+   Celestial Soft-Pink Theme Engine & Interactive Dynamics
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -23,7 +23,7 @@ function initScrollAnimations() {
             }
         });
     }, {
-        threshold: 0.15
+        threshold: 0.12
     });
 
     cards.forEach(card => observer.observe(card));
@@ -45,29 +45,29 @@ function initStarfieldCanvas() {
         height = canvas.height = window.innerHeight;
     });
 
-    const numStars = 180;
+    const numStars = 190;
     const stars = [];
     const meteors = [];
 
     const colors = [
         'rgba(255, 255, 255, ',
-        'rgba(255, 215, 0, ',   // Gold
-        'rgba(255, 182, 193, ', // Light Pink
-        'rgba(244, 114, 182, ', // Rose
-        'rgba(225, 190, 231, '  // Lavender
+        'rgba(251, 191, 36, ',  // Amber/Gold
+        'rgba(255, 182, 193, ', // Light Rose
+        'rgba(244, 114, 182, ', // Pink Accent
+        'rgba(216, 180, 254, '  // Soft Violet
     ];
 
     for (let i = 0; i < numStars; i++) {
         stars.push({
             x: Math.random() * width,
             y: Math.random() * height,
-            radius: Math.random() * 2.5 + 0.4,
+            radius: Math.random() * 2.2 + 0.4,
             colorPrefix: colors[Math.floor(Math.random() * colors.length)],
             alpha: Math.random(),
-            speed: Math.random() * 0.018 + 0.005,
-            velocityY: -(Math.random() * 0.25 + 0.05),
+            speed: Math.random() * 0.016 + 0.004,
+            velocityY: -(Math.random() * 0.22 + 0.04),
             direction: Math.random() > 0.5 ? 1 : -1,
-            isSparkle: Math.random() > 0.4,
+            isSparkle: Math.random() > 0.45,
             flareAngle: Math.random() * Math.PI
         });
     }
@@ -77,8 +77,8 @@ function initStarfieldCanvas() {
         meteors.push({
             x: Math.random() * width * 0.8 + width * 0.1,
             y: Math.random() * height * 0.3,
-            length: Math.random() * 80 + 50,
-            speed: Math.random() * 6 + 4,
+            length: Math.random() * 90 + 50,
+            speed: Math.random() * 5.5 + 3.5,
             angle: Math.PI / 4 + (Math.random() - 0.5) * 0.2,
             alpha: 1,
             life: 0
@@ -89,15 +89,15 @@ function initStarfieldCanvas() {
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
         ctx.fillStyle = star.colorPrefix + star.alpha + ')';
-        ctx.shadowBlur = star.radius * 6;
-        ctx.shadowColor = 'rgba(255, 105, 180, 0.9)';
+        ctx.shadowBlur = star.radius * 5;
+        ctx.shadowColor = 'rgba(244, 114, 182, 0.8)';
         ctx.fill();
 
-        if (star.isSparkle && star.alpha > 0.35) {
+        if (star.isSparkle && star.alpha > 0.4) {
             ctx.save();
-            ctx.strokeStyle = star.colorPrefix + (star.alpha * 0.85) + ')';
-            ctx.lineWidth = 1;
-            const len = star.radius * 4.2;
+            ctx.strokeStyle = star.colorPrefix + (star.alpha * 0.8) + ')';
+            ctx.lineWidth = 0.9;
+            const len = star.radius * 4;
 
             ctx.translate(star.x, star.y);
             ctx.rotate(star.flareAngle);
@@ -120,14 +120,14 @@ function initStarfieldCanvas() {
 
             const grad = ctx.createLinearGradient(m.x, m.y, endX, endY);
             grad.addColorStop(0, 'rgba(255, 255, 255, ' + m.alpha + ')');
-            grad.addColorStop(0.3, 'rgba(255, 182, 193, ' + (m.alpha * 0.7) + ')');
+            grad.addColorStop(0.3, 'rgba(255, 182, 193, ' + (m.alpha * 0.6) + ')');
             grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
 
             ctx.beginPath();
             ctx.moveTo(m.x, m.y);
             ctx.lineTo(endX, endY);
             ctx.strokeStyle = grad;
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = 2.2;
             ctx.stroke();
 
             m.x += Math.cos(m.angle) * m.speed;
@@ -146,7 +146,7 @@ function initStarfieldCanvas() {
         stars.forEach(star => {
             star.alpha += star.speed * star.direction;
             star.y += star.velocityY;
-            star.flareAngle += 0.005;
+            star.flareAngle += 0.004;
 
             if (star.y < 0) {
                 star.y = height;
@@ -204,30 +204,29 @@ function initUnicornFollower() {
     });
 
     function createTrailParticle(x, y) {
-        if (Math.random() > 0.35) return;
+        if (Math.random() > 0.38) return;
 
         const particle = document.createElement('div');
         particle.className = 'click-heart';
-        const symbols = ['✨', '💖', '⭐', '🌸', '💫', '💕'];
-        particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        particle.textContent = '✦';
 
-        const offsetX = (Math.random() - 0.5) * 40;
-        const offsetY = (Math.random() - 0.5) * 40;
+        const offsetX = (Math.random() - 0.5) * 35;
+        const offsetY = (Math.random() - 0.5) * 35;
 
         particle.style.left = (x + offsetX) + 'px';
         particle.style.top = (y + offsetY) + 'px';
-        particle.style.fontSize = (Math.random() * 14 + 10) + 'px';
+        particle.style.fontSize = (Math.random() * 12 + 8) + 'px';
+        particle.style.color = Math.random() > 0.5 ? '#f472b6' : '#ffffff';
         particle.style.pointerEvents = 'none';
 
         document.body.appendChild(particle);
 
         setTimeout(() => {
             particle.remove();
-        }, 1100);
+        }, 1000);
     }
 
     function renderUnicorn() {
-        // Advanced Spring LERP dynamics
         const prevX = currentX;
         const prevY = currentY;
 
@@ -239,15 +238,12 @@ function initUnicornFollower() {
 
         const speed = Math.sqrt(velX * velX + velY * velY);
 
-        // Tilt and scale based on movement velocity
         const tilt = Math.max(-20, Math.min(20, velX * 1.8));
-        const scale = 1 + Math.min(0.15, speed * 0.01);
+        const scale = 1 + Math.min(0.14, speed * 0.01);
 
-        // Wing flapping cycle rate speeds up with velocity
         wingFlap += 0.08 + Math.min(0.2, speed * 0.02);
         const wingScaleY = 0.85 + Math.sin(wingFlap) * 0.25;
 
-        // Apply wing transform
         const wingFront = unicorn.querySelector('.wing-front');
         const wingBack = unicorn.querySelector('.wing-back');
         if (wingFront && wingBack) {
@@ -257,9 +253,8 @@ function initUnicornFollower() {
             wingBack.style.transform = `scaleY(${0.9 + Math.cos(wingFlap) * 0.2})`;
         }
 
-        // Align unicorn horn/head naturally with cursor point
-        const posX = currentX - 70;
-        const posY = currentY - 70;
+        const posX = currentX - 65;
+        const posY = currentY - 65;
 
         unicorn.style.transform = `translate3d(${posX}px, ${posY}px, 0) rotate(${tilt}deg) scale(${scale})`;
 
@@ -270,36 +265,34 @@ function initUnicornFollower() {
 }
 
 /* --------------------------------------------------------------------------
-   3. Click Sparkle / Heart Burst Effect
+   3. Click Celestial Sparkle Burst Effect
    -------------------------------------------------------------------------- */
 function initClickSparkleEffects() {
     window.addEventListener('click', (e) => {
-        const count = 8;
-        const symbols = ['💖', '✨', '🌸', '💕', '⭐'];
+        const count = 7;
+        const symbols = ['✦', '✧', '⋆', '✨'];
 
         for (let i = 0; i < count; i++) {
             const burst = document.createElement('div');
             burst.className = 'click-heart';
             burst.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            burst.style.color = Math.random() > 0.5 ? '#be185d' : '#f472b6';
 
             const angle = (i / count) * Math.PI * 2;
-            const distance = Math.random() * 60 + 20;
-            const x = e.clientX + Math.cos(angle) * distance;
-            const y = e.clientY + Math.sin(angle) * distance;
+            const distance = Math.random() * 55 + 20;
 
             burst.style.left = e.clientX + 'px';
             burst.style.top = e.clientY + 'px';
-            burst.style.fontSize = (Math.random() * 16 + 14) + 'px';
+            burst.style.fontSize = (Math.random() * 14 + 10) + 'px';
 
             document.body.appendChild(burst);
 
-            // Animate outwards
             setTimeout(() => {
-                burst.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance - 40}px) scale(1.2)`;
+                burst.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance - 30}px) scale(1.1)`;
                 burst.style.opacity = '0';
             }, 20);
 
-            setTimeout(() => burst.remove(), 1200);
+            setTimeout(() => burst.remove(), 1100);
         }
     });
 }
@@ -310,11 +303,9 @@ function initClickSparkleEffects() {
 function initAudioController() {
     const musicBtn = document.getElementById('musicToggleBtn');
     const musicText = document.getElementById('musicText');
-    const musicIcon = document.getElementById('musicIcon');
 
     let audioCtx = null;
     let isPlaying = false;
-    let intervalId = null;
 
     // Gentle romantic melody notes (Pentatonic F Major / D Minor dream scale)
     const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
@@ -325,43 +316,40 @@ function initAudioController() {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
 
-        // Select soft random frequency
         const freq = notes[Math.floor(Math.random() * notes.length)];
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
 
-        // Soft envelope
         gain.gain.setValueAtTime(0, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.08, audioCtx.currentTime + 0.3);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.5);
+        gain.gain.linearRampToValueAtTime(0.07, audioCtx.currentTime + 0.35);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.6);
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
 
         osc.start();
-        osc.stop(audioCtx.currentTime + 2.6);
+        osc.stop(audioCtx.currentTime + 2.7);
     }
 
-    musicBtn.addEventListener('click', () => {
-        if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
+    if (musicBtn) {
+        musicBtn.addEventListener('click', () => {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
 
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
 
-        if (!isPlaying) {
-            isPlaying = true;
-            musicText.textContent = 'در حال پخش طنین جادویی...';
-            musicIcon.textContent = '🎶';
-            playDreamyNote();
-            intervalId = setInterval(playDreamyNote, 800);
-        } else {
-            isPlaying = false;
-            musicText.textContent = 'طنین جادویی رویایی';
-            musicIcon.textContent = '🎵';
-            clearInterval(intervalId);
-        }
-    });
+            if (!isPlaying) {
+                isPlaying = true;
+                if (musicText) musicText.textContent = 'در حال پخش طنین جادویی...';
+                playDreamyNote();
+                setInterval(playDreamyNote, 850);
+            } else {
+                isPlaying = false;
+                if (musicText) musicText.textContent = 'طنین جادویی رویایی';
+            }
+        });
+    }
 }
