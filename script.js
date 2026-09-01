@@ -1,581 +1,398 @@
-/* ==========================================================================
-   Celestial Soft-Pink Theme Engine & Interactive Dynamics
-   ========================================================================== */
+/**
+ * ==========================================================================
+ * ✨ SHADI & THE CELESTIAL UNICORN - DYNAMIC SCRIPT & INTERACTION ENGINE ✨
+ * ==========================================================================
+ */
 
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Initialize Starfield & Shooting Stars Canvas ---
     initStarfieldCanvas();
+
+    // --- Initialize Unicorn Cursor Follower with Spring/LERP Physics ---
     initUnicornFollower();
-    initClickSparkleEffects();
-    initAudioController();
-    initUnicornMiniGame();
+
+    // --- Initialize Secret Love Cards ---
+    initLoveCards();
+
+    // --- Initialize Heart Burst Interactive Effects ---
+    initHeartBurstEffects();
+
+    // --- Initialize Web Audio Ambient Sound Generator ---
+    initAudioSynthesizer();
 });
 
-// Global Unicorn Position for Mini-Game Collision Detection
-let unicornGlobalPos = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-
-/* --------------------------------------------------------------------------
-   1. Multi-Layered Starfield Canvas & Shooting Star Particle Engine
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   1. STARFIELD & SHOOTING STARS CANVAS ENGINE
+   ========================================================================== */
 function initStarfieldCanvas() {
     const canvas = document.getElementById('starfieldCanvas');
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
+    let width = (canvas.width = window.innerWidth);
+    let height = (canvas.height = window.innerHeight);
 
     window.addEventListener('resize', () => {
         width = canvas.width = window.innerWidth;
         height = canvas.height = window.innerHeight;
+        createStars();
     });
 
-    const numStars = 190;
+    const numStars = Math.floor((width * height) / 3000);
     const stars = [];
-    const meteors = [];
+    const shootingStars = [];
 
-    const colors = [
-        'rgba(255, 255, 255, ',
-        'rgba(251, 191, 36, ',  // Amber/Gold
-        'rgba(255, 182, 193, ', // Light Rose
-        'rgba(244, 114, 182, ', // Pink Accent
-        'rgba(216, 180, 254, '  // Soft Violet
-    ];
+    const starColors = ['#ffffff', '#ffb3c6', '#ffd43b', '#f7aef8', '#eebefa'];
 
-    for (let i = 0; i < numStars; i++) {
-        stars.push({
-            x: Math.random() * width,
-            y: Math.random() * height,
-            radius: Math.random() * 2.2 + 0.4,
-            colorPrefix: colors[Math.floor(Math.random() * colors.length)],
-            alpha: Math.random(),
-            speed: Math.random() * 0.016 + 0.004,
-            velocityY: -(Math.random() * 0.22 + 0.04),
-            direction: Math.random() > 0.5 ? 1 : -1,
-            isSparkle: Math.random() > 0.45,
-            flareAngle: Math.random() * Math.PI
-        });
+    function createStars() {
+        stars.length = 0;
+        for (let i = 0; i < numStars; i++) {
+            stars.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                radius: Math.random() * 1.6 + 0.3,
+                color: starColors[Math.floor(Math.random() * starColors.length)],
+                alpha: Math.random(),
+                speed: Math.random() * 0.02 + 0.005,
+                twinkleDirection: Math.random() > 0.5 ? 1 : -1
+            });
+        }
     }
 
-    function createMeteor() {
-        if (meteors.length >= 2 || Math.random() > 0.015) return;
-        meteors.push({
-            x: Math.random() * width * 0.8 + width * 0.1,
-            y: Math.random() * height * 0.3,
-            length: Math.random() * 90 + 50,
-            speed: Math.random() * 5.5 + 3.5,
-            angle: Math.PI / 4 + (Math.random() - 0.5) * 0.2,
-            alpha: 1,
-            life: 0
-        });
+    function spawnShootingStar() {
+        if (shootingStars.length < 3 && Math.random() < 0.03) {
+            const startX = Math.random() * width * 0.8;
+            const startY = Math.random() * height * 0.5;
+            const length = Math.random() * 80 + 100;
+            const angle = (Math.PI / 180) * (Math.random() * 15 + 30); // 30-45 deg
+
+            shootingStars.push({
+                x: startX,
+                y: startY,
+                length: length,
+                speed: Math.random() * 6 + 8,
+                angle: angle,
+                dx: Math.cos(angle),
+                dy: Math.sin(angle),
+                life: 1,
+                decay: Math.random() * 0.015 + 0.015,
+                thickness: Math.random() * 1.5 + 1
+            });
+        }
     }
 
-    function drawStar(star) {
-        ctx.beginPath();
-        ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = star.colorPrefix + star.alpha + ')';
-        ctx.shadowBlur = star.radius * 5;
-        ctx.shadowColor = 'rgba(244, 114, 182, 0.8)';
-        ctx.fill();
+    createStars();
 
-        if (star.isSparkle && star.alpha > 0.4) {
+    function animateCanvas() {
+        ctx.clearRect(0, 0, width, height);
+
+        // --- Render Twinkling Stars ---
+        for (let i = 0; i < stars.length; i++) {
+            const s = stars[i];
+            s.alpha += s.speed * s.twinkleDirection;
+            if (s.alpha >= 1) {
+                s.alpha = 1;
+                s.twinkleDirection = -1;
+            } else if (s.alpha <= 0.1) {
+                s.alpha = 0.1;
+                s.twinkleDirection = 1;
+            }
+
             ctx.save();
-            ctx.strokeStyle = star.colorPrefix + (star.alpha * 0.8) + ')';
-            ctx.lineWidth = 0.9;
-            const len = star.radius * 4;
+            ctx.globalAlpha = s.alpha;
+            ctx.fillStyle = s.color;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+            ctx.fill();
 
-            ctx.translate(star.x, star.y);
-            ctx.rotate(star.flareAngle);
+            // Glow for larger stars
+            if (s.radius > 1.2) {
+                ctx.shadowBlur = 8;
+                ctx.shadowColor = s.color;
+                ctx.fill();
+            }
+            ctx.restore();
+        }
+
+        // --- Render Shooting Stars ---
+        spawnShootingStar();
+        for (let i = shootingStars.length - 1; i >= 0; i--) {
+            const ss = shootingStars[i];
+            ss.x += ss.dx * ss.speed;
+            ss.y += ss.dy * ss.speed;
+            ss.life -= ss.decay;
+
+            if (ss.life <= 0 || ss.x > width || ss.y > height) {
+                shootingStars.splice(i, 1);
+                continue;
+            }
+
+            ctx.save();
+            ctx.globalAlpha = ss.life;
+            const tailX = ss.x - ss.dx * ss.length;
+            const tailY = ss.y - ss.dy * ss.length;
+
+            const grad = ctx.createLinearGradient(ss.x, ss.y, tailX, tailY);
+            grad.addColorStop(0, '#ffffff');
+            grad.addColorStop(0.3, '#ffb3c6');
+            grad.addColorStop(1, 'rgba(255, 179, 198, 0)');
+
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = ss.thickness;
+            ctx.lineCap = 'round';
 
             ctx.beginPath();
-            ctx.moveTo(-len, 0);
-            ctx.lineTo(len, 0);
-            ctx.moveTo(0, -len);
-            ctx.lineTo(0, len);
+            ctx.moveTo(ss.x, ss.y);
+            ctx.lineTo(tailX, tailY);
             ctx.stroke();
             ctx.restore();
         }
+
+        requestAnimationFrame(animateCanvas);
     }
 
-    function drawMeteors() {
-        for (let i = meteors.length - 1; i >= 0; i--) {
-            const m = meteors[i];
-            const endX = m.x - Math.cos(m.angle) * m.length;
-            const endY = m.y - Math.sin(m.angle) * m.length;
-
-            const grad = ctx.createLinearGradient(m.x, m.y, endX, endY);
-            grad.addColorStop(0, 'rgba(255, 255, 255, ' + m.alpha + ')');
-            grad.addColorStop(0.3, 'rgba(255, 182, 193, ' + (m.alpha * 0.6) + ')');
-            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
-
-            ctx.beginPath();
-            ctx.moveTo(m.x, m.y);
-            ctx.lineTo(endX, endY);
-            ctx.strokeStyle = grad;
-            ctx.lineWidth = 2.2;
-            ctx.stroke();
-
-            m.x += Math.cos(m.angle) * m.speed;
-            m.y += Math.sin(m.angle) * m.speed;
-            m.alpha -= 0.012;
-
-            if (m.alpha <= 0 || m.x > width || m.y > height) {
-                meteors.splice(i, 1);
-            }
-        }
-    }
-
-    function animate() {
-        ctx.clearRect(0, 0, width, height);
-
-        stars.forEach(star => {
-            star.alpha += star.speed * star.direction;
-            star.y += star.velocityY;
-            star.flareAngle += 0.004;
-
-            if (star.y < 0) {
-                star.y = height;
-                star.x = Math.random() * width;
-            }
-
-            if (star.alpha >= 1) {
-                star.alpha = 1;
-                star.direction = -1;
-            } else if (star.alpha <= 0.05) {
-                star.alpha = 0.05;
-                star.direction = 1;
-                star.x = Math.random() * width;
-            }
-            drawStar(star);
-        });
-
-        createMeteor();
-        drawMeteors();
-
-        requestAnimationFrame(animate);
-    }
-
-    animate();
+    animateCanvas();
 }
 
-/* --------------------------------------------------------------------------
-   2. Unicorn Cursor Follower (Linear Interpolation LERP & Trail Particles)
-   -------------------------------------------------------------------------- */
+/* ==========================================================================
+   2. UNICORN CURSOR FOLLOWER WITH LERP PHYSICS & TRAIL SPARKLES
+   ========================================================================== */
 function initUnicornFollower() {
-    const unicorn = document.getElementById('unicornFollower');
-    if (!unicorn) return;
+    const follower = document.getElementById('unicornFollower');
+    if (!follower) return;
 
     let targetX = window.innerWidth / 2;
-    let targetY = window.innerHeight / 3;
+    let targetY = window.innerHeight / 2;
     let currentX = targetX;
     let currentY = targetY;
 
-    let velX = 0;
-    let velY = 0;
-    let wingFlap = 0;
+    let lastSparkleTime = 0;
 
+    // Track mouse / touch position
     window.addEventListener('mousemove', (e) => {
         targetX = e.clientX;
         targetY = e.clientY;
-        createTrailParticle(e.clientX, e.clientY);
     });
 
     window.addEventListener('touchmove', (e) => {
         if (e.touches.length > 0) {
             targetX = e.touches[0].clientX;
             targetY = e.touches[0].clientY;
-            createTrailParticle(e.touches[0].clientX, e.touches[0].clientY);
         }
+    }, { passive: true });
+
+    function updateFollower() {
+        // Linear Interpolation (LERP) for smooth, floaty physics
+        const ease = 0.08;
+        const dx = targetX - currentX;
+        const dy = targetY - currentY;
+
+        currentX += dx * ease;
+        currentY += dy * ease;
+
+        // Dynamic tilt based on movement direction
+        const tilt = Math.max(-15, Math.min(15, dx * 0.15));
+
+        follower.style.transform = `translate3d(${currentX}px, ${currentY}px, 0) rotate(${tilt}deg)`;
+
+        // Emit sparkling trail particles if moving
+        const distMoved = Math.hypot(dx, dy);
+        const now = Date.now();
+        if (distMoved > 2 && now - lastSparkleTime > 60) {
+            spawnTrailParticle(currentX, currentY);
+            lastSparkleTime = now;
+        }
+
+        requestAnimationFrame(updateFollower);
+    }
+
+    requestAnimationFrame(updateFollower);
+}
+
+function spawnTrailParticle(x, y) {
+    const particle = document.createElement('div');
+    particle.className = 'trail-particle';
+
+    const symbols = ['✦', '✨', '💖', '⭐', '🌸'];
+    const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+
+    particle.textContent = symbol;
+    particle.style.left = `${x}px`;
+    particle.style.top = `${y}px`;
+    particle.style.fontSize = `${Math.random() * 14 + 10}px`;
+
+    const colors = ['#ff8787', '#f783ac', '#da77f2', '#ffd43b', '#ffffff'];
+    particle.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+    // Random spread direction
+    const angle = Math.random() * Math.PI * 2;
+    const distance = Math.random() * 30 + 15;
+    const dx = Math.cos(angle) * distance;
+    const dy = Math.sin(angle) * distance;
+
+    particle.style.setProperty('--dx', `${dx}px`);
+    particle.style.setProperty('--dy', `${dy}px`);
+
+    document.body.appendChild(particle);
+
+    setTimeout(() => {
+        if (particle.parentNode) {
+            particle.parentNode.removeChild(particle);
+        }
+    }, 900);
+}
+
+/* ==========================================================================
+   3. INTERACTIVE SECRET LOVE CARDS
+   ========================================================================== */
+function initLoveCards() {
+    const cards = document.querySelectorAll('.love-card');
+    cards.forEach((card) => {
+        card.addEventListener('click', () => {
+            card.classList.toggle('flipped');
+
+            // Sparkle burst on flip
+            const rect = card.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            triggerHeartBurst(centerX, centerY, 8);
+        });
     });
+}
 
-    function createTrailParticle(x, y) {
-        if (Math.random() > 0.38) return;
+/* ==========================================================================
+   4. HEART BURST EFFECTS
+   ========================================================================== */
+function initHeartBurstEffects() {
+    const burstBtn = document.getElementById('heartBurstBtn');
+    const mainHeart = document.getElementById('mainHeart');
 
-        const particle = document.createElement('div');
-        particle.className = 'click-heart';
-        particle.textContent = '✦';
+    if (burstBtn) {
+        burstBtn.addEventListener('click', (e) => {
+            const rect = burstBtn.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            triggerHeartBurst(x, y, 35);
+        });
+    }
 
-        const offsetX = (Math.random() - 0.5) * 35;
-        const offsetY = (Math.random() - 0.5) * 35;
+    if (mainHeart) {
+        mainHeart.addEventListener('click', (e) => {
+            const rect = mainHeart.getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            triggerHeartBurst(x, y, 25);
+        });
+    }
 
-        particle.style.left = (x + offsetX) + 'px';
-        particle.style.top = (y + offsetY) + 'px';
-        particle.style.fontSize = (Math.random() * 12 + 8) + 'px';
-        particle.style.color = Math.random() > 0.5 ? '#f472b6' : '#ffffff';
-        particle.style.pointerEvents = 'none';
+    // Also burst on clicking anywhere on background
+    window.addEventListener('click', (e) => {
+        // Don't duplicate if button or card clicked
+        if (e.target.closest('.magic-btn') || e.target.closest('.love-card') || e.target.closest('.audio-btn')) return;
+        triggerHeartBurst(e.clientX, e.clientY, 12);
+    });
+}
 
-        document.body.appendChild(particle);
+function triggerHeartBurst(x, y, count = 20) {
+    const heartTypes = ['💖', '💕', '💗', '✨', '🌸', '❤️'];
+
+    for (let i = 0; i < count; i++) {
+        const heart = document.createElement('div');
+        heart.className = 'trail-particle';
+        heart.textContent = heartTypes[Math.floor(Math.random() * heartTypes.length)];
+        heart.style.left = `${x}px`;
+        heart.style.top = `${y}px`;
+        heart.style.fontSize = `${Math.random() * 20 + 16}px`;
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 120 + 50;
+        const dx = Math.cos(angle) * speed;
+        const dy = Math.sin(angle) * speed;
+
+        heart.style.setProperty('--dx', `${dx}px`);
+        heart.style.setProperty('--dy', `${dy}px`);
+
+        document.body.appendChild(heart);
 
         setTimeout(() => {
-            particle.remove();
-        }, 1000);
+            if (heart.parentNode) {
+                heart.parentNode.removeChild(heart);
+            }
+        }, 900);
     }
-
-    function renderUnicorn() {
-        const prevX = currentX;
-        const prevY = currentY;
-
-        currentX += (targetX - currentX) * 0.075;
-        currentY += (targetY - currentY) * 0.075;
-
-        velX = currentX - prevX;
-        velY = currentY - prevY;
-
-        const speed = Math.sqrt(velX * velX + velY * velY);
-
-        const tilt = Math.max(-20, Math.min(20, velX * 1.8));
-        const scale = 1 + Math.min(0.14, speed * 0.01);
-
-        wingFlap += 0.08 + Math.min(0.2, speed * 0.02);
-        const wingScaleY = 0.85 + Math.sin(wingFlap) * 0.25;
-
-        const wingFront = unicorn.querySelector('.wing-front');
-        const wingBack = unicorn.querySelector('.wing-back');
-        if (wingFront && wingBack) {
-            wingFront.style.transformOrigin = '115px 90px';
-            wingBack.style.transformOrigin = '105px 95px';
-            wingFront.style.transform = `scaleY(${wingScaleY})`;
-            wingBack.style.transform = `scaleY(${0.9 + Math.cos(wingFlap) * 0.2})`;
-        }
-
-        const posX = currentX - 65;
-        const posY = currentY - 65;
-
-        unicornGlobalPos.x = currentX;
-        unicornGlobalPos.y = currentY;
-
-        unicorn.style.transform = `translate3d(${posX}px, ${posY}px, 0) rotate(${tilt}deg) scale(${scale})`;
-
-        requestAnimationFrame(renderUnicorn);
-    }
-
-    renderUnicorn();
 }
 
-/* --------------------------------------------------------------------------
-   3. Click Celestial Sparkle Burst Effect
-   -------------------------------------------------------------------------- */
-function initClickSparkleEffects() {
-    window.addEventListener('click', (e) => {
-        const count = 7;
-        const symbols = ['✦', '✧', '⋆', '✨'];
-
-        for (let i = 0; i < count; i++) {
-            const burst = document.createElement('div');
-            burst.className = 'click-heart';
-            burst.textContent = symbols[Math.floor(Math.random() * symbols.length)];
-            burst.style.color = Math.random() > 0.5 ? '#be185d' : '#f472b6';
-
-            const angle = (i / count) * Math.PI * 2;
-            const distance = Math.random() * 55 + 20;
-
-            burst.style.left = e.clientX + 'px';
-            burst.style.top = e.clientY + 'px';
-            burst.style.fontSize = (Math.random() * 14 + 10) + 'px';
-
-            document.body.appendChild(burst);
-
-            setTimeout(() => {
-                burst.style.transform = `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance - 30}px) scale(1.1)`;
-                burst.style.opacity = '0';
-            }, 20);
-
-            setTimeout(() => burst.remove(), 1100);
-        }
-    });
-}
-
-/* --------------------------------------------------------------------------
-   4. Ambient Music / Sound Synth Controller (Web Audio API)
-   -------------------------------------------------------------------------- */
-function initAudioController() {
-    const musicBtn = document.getElementById('musicToggleBtn');
-    const musicText = document.getElementById('musicText');
+/* ==========================================================================
+   5. AMBIENT WEB AUDIO SYNTHESIZER
+   ========================================================================== */
+function initAudioSynthesizer() {
+    const btn = document.getElementById('musicToggleBtn');
+    if (!btn) return;
 
     let audioCtx = null;
     let isPlaying = false;
+    let timerId = null;
 
-    // Gentle romantic melody notes (Pentatonic F Major / D Minor dream scale)
-    const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 587.33, 659.25];
+    btn.addEventListener('click', () => {
+        if (!isPlaying) {
+            startSynthesizer();
+            btn.classList.add('playing');
+            btn.querySelector('.audio-text').textContent = 'توقف طنین';
+            isPlaying = true;
+        } else {
+            stopSynthesizer();
+            btn.classList.remove('playing');
+            btn.querySelector('.audio-text').textContent = 'طنین رویایی';
+            isPlaying = false;
+        }
+    });
 
-    function playDreamyNote() {
-        if (!audioCtx) return;
-
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-
-        const freq = notes[Math.floor(Math.random() * notes.length)];
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-
-        gain.gain.setValueAtTime(0, audioCtx.currentTime);
-        gain.gain.linearRampToValueAtTime(0.07, audioCtx.currentTime + 0.35);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 2.6);
-
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-
-        osc.start();
-        osc.stop(audioCtx.currentTime + 2.7);
-    }
-
-    if (musicBtn) {
-        musicBtn.addEventListener('click', () => {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-
-            if (!isPlaying) {
-                isPlaying = true;
-                if (musicText) musicText.textContent = 'در حال پخش طنین جادویی...';
-                playDreamyNote();
-                setInterval(playDreamyNote, 850);
-            } else {
-                isPlaying = false;
-                if (musicText) musicText.textContent = 'طنین جادویی رویایی';
-            }
-        });
-    }
-}
-
-/* --------------------------------------------------------------------------
-   5. Unicorn Interactive Mini-Game Engine
-   -------------------------------------------------------------------------- */
-function initUnicornMiniGame() {
-    const gameCanvas = document.getElementById('gameCanvas');
-    if (!gameCanvas) return;
-    const ctx = gameCanvas.getContext('2d');
-
-    const scoreDisplay = document.getElementById('scoreDisplay');
-    const highScoreDisplay = document.getElementById('highScoreDisplay');
-    const startBtn = document.getElementById('startGameBtn');
-    const gameBtnText = document.getElementById('gameBtnText');
-    const loveToast = document.getElementById('loveToast');
-    const toastMessage = document.getElementById('toastMessage');
-
-    let isGameRunning = false;
-    let score = 0;
-    let highScore = localStorage.getItem('shadi_unicorn_highscore') || 0;
-    if (highScoreDisplay) highScoreDisplay.textContent = highScore;
-
-    let items = [];
-    let particles = [];
-    let popups = [];
-
-    const itemTypes = [
-        { symbol: '💖', points: 100, color: '#ec4899', radius: 22, rarity: 0.4 },
-        { symbol: '⭐', points: 150, color: '#f59e0b', radius: 20, rarity: 0.3 },
-        { symbol: '💎', points: 250, color: '#a855f7', radius: 24, rarity: 0.15 },
-        { symbol: '🧁', points: 200, color: '#f43f5e', radius: 22, rarity: 0.15 }
-    ];
-
-    const loveMessages = [
-        "شادی جان، تو زیباترین رویای منی! 💕",
-        "با هر لبخندت جهان من روشن‌تر میشه! ✨",
-        "تک‌شاخ جادویی هم تورو خیلی دوست داره! 🦄",
-        "هر ستاره، نشانه‌ای از عشق بی‌کران من به توست! 🌟",
-        "تو فرشتهٔ مهربون دنیای منی شادی! 💖",
-        "بی‌نهایت دوست دارم شادی عزیزم! ❤️"
-    ];
-
-    function resizeCanvas() {
-        const rect = gameCanvas.parentElement.getBoundingClientRect();
-        gameCanvas.width = rect.width;
-        gameCanvas.height = rect.height;
-    }
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    function spawnItem() {
-        if (!isGameRunning) return;
-
-        const rand = Math.random();
-        let cumulative = 0;
-        let selected = itemTypes[0];
-
-        for (const type of itemTypes) {
-            cumulative += type.rarity;
-            if (rand <= cumulative) {
-                selected = type;
-                break;
-            }
+    function startSynthesizer() {
+        if (!audioCtx) {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            audioCtx = new AudioContext();
         }
 
-        items.push({
-            x: Math.random() * (gameCanvas.width - 60) + 30,
-            y: -30,
-            speedY: Math.random() * 2.2 + 1.8,
-            speedX: Math.sin(Math.random() * Math.PI * 2) * 0.8,
-            symbol: selected.symbol,
-            points: selected.points,
-            color: selected.color,
-            radius: selected.radius,
-            rotation: 0,
-            rotSpeed: (Math.random() - 0.5) * 0.05
-        });
-    }
-
-    function createCollectBurst(x, y, color) {
-        for (let i = 0; i < 12; i++) {
-            const angle = (i / 12) * Math.PI * 2;
-            const speed = Math.random() * 4 + 2;
-            particles.push({
-                x, y,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                radius: Math.random() * 4 + 2,
-                color,
-                alpha: 1,
-                life: 1
-            });
-        }
-    }
-
-    function showPopupText(text, x, y, color) {
-        popups.push({
-            text, x, y,
-            color,
-            alpha: 1,
-            vy: -1.5
-        });
-    }
-
-    function triggerLoveToast() {
-        if (!loveToast || !toastMessage) return;
-        const msg = loveMessages[Math.floor(Math.random() * loveMessages.length)];
-        toastMessage.textContent = msg;
-        loveToast.classList.remove('hidden');
-
-        setTimeout(() => {
-            loveToast.classList.add('hidden');
-        }, 3200);
-    }
-
-    function checkCollision(item) {
-        const rect = gameCanvas.getBoundingClientRect();
-        const unicornCanvasX = unicornGlobalPos.x - rect.left;
-        const unicornCanvasY = unicornGlobalPos.y - rect.top;
-
-        const dist = Math.hypot(item.x - unicornCanvasX, item.y - unicornCanvasY);
-        return dist < (item.radius + 38);
-    }
-
-    function gameLoop() {
-        ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-
-        // Draw items
-        for (let i = items.length - 1; i >= 0; i--) {
-            const item = items[i];
-            item.y += item.speedY;
-            item.x += item.speedX;
-            item.rotation += item.rotSpeed;
-
-            // Draw item glow
-            ctx.save();
-            ctx.shadowBlur = 12;
-            ctx.shadowColor = item.color;
-            ctx.font = `${item.radius * 1.6}px sans-serif`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(item.symbol, item.x, item.y);
-            ctx.restore();
-
-            // Collision Check
-            if (checkCollision(item)) {
-                score += item.points;
-                if (scoreDisplay) scoreDisplay.textContent = score;
-
-                if (score > highScore) {
-                    highScore = score;
-                    localStorage.setItem('shadi_unicorn_highscore', highScore);
-                    if (highScoreDisplay) highScoreDisplay.textContent = highScore;
-                }
-
-                createCollectBurst(item.x, item.y, item.color);
-                showPopupText(`+${item.points}`, item.x, item.y - 10, item.color);
-
-                if (score % 500 === 0 || Math.random() < 0.2) {
-                    triggerLoveToast();
-                }
-
-                items.splice(i, 1);
-                continue;
-            }
-
-            if (item.y > gameCanvas.height + 40) {
-                items.splice(i, 1);
-            }
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
         }
 
-        // Draw particles
-        for (let i = particles.length - 1; i >= 0; i--) {
-            const p = particles[i];
-            p.x += p.vx;
-            p.y += p.vy;
-            p.alpha -= 0.03;
+        // Dreamy pentatonic chord frequencies (C major / A minor celestial notes)
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
 
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fillStyle = p.color;
-            ctx.globalAlpha = Math.max(0, p.alpha);
-            ctx.fill();
-            ctx.globalAlpha = 1;
+        function playCelestialNote() {
+            if (!isPlaying) return;
 
-            if (p.alpha <= 0) {
-                particles.splice(i, 1);
-            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+
+            const freq = notes[Math.floor(Math.random() * notes.length)];
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+
+            // Soft envelope
+            gain.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + 0.8);
+            gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 3.5);
+
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            osc.start();
+            osc.stop(audioCtx.currentTime + 3.6);
+
+            // Schedule next note
+            const nextTime = Math.random() * 800 + 400;
+            timerId = setTimeout(playCelestialNote, nextTime);
         }
 
-        // Draw popup text
-        for (let i = popups.length - 1; i >= 0; i--) {
-            const pop = popups[i];
-            pop.y += pop.vy;
-            pop.alpha -= 0.025;
-
-            ctx.save();
-            ctx.font = 'bold 18px Vazirmatn, sans-serif';
-            ctx.fillStyle = pop.color;
-            ctx.globalAlpha = Math.max(0, pop.alpha);
-            ctx.fillText(pop.text, pop.x, pop.y);
-            ctx.restore();
-
-            if (pop.alpha <= 0) {
-                popups.splice(i, 1);
-            }
-        }
-
-        if (isGameRunning) {
-            requestAnimationFrame(gameLoop);
-        }
+        playCelestialNote();
     }
 
-    let spawnInterval = null;
-
-    if (startBtn) {
-        startBtn.addEventListener('click', () => {
-            if (!isGameRunning) {
-                isGameRunning = true;
-                score = 0;
-                if (scoreDisplay) scoreDisplay.textContent = '0';
-                items = [];
-                particles = [];
-                popups = [];
-                if (gameBtnText) gameBtnText.textContent = 'بازی در حال اجراست... ✨';
-                startBtn.style.opacity = '0.85';
-
-                spawnInterval = setInterval(spawnItem, 550);
-                gameLoop();
-                triggerLoveToast();
-            } else {
-                isGameRunning = false;
-                clearInterval(spawnInterval);
-                if (gameBtnText) gameBtnText.textContent = 'شروع مجدد بازی';
-                startBtn.style.opacity = '1';
-            }
-        });
+    function stopSynthesizer() {
+        if (timerId) clearTimeout(timerId);
+        if (audioCtx && audioCtx.state === 'running') {
+            audioCtx.suspend();
+        }
     }
 }
