@@ -7,13 +7,34 @@ document.addEventListener('DOMContentLoaded', () => {
     initUnicornFollower();
     initClickSparkleEffects();
     initAudioController();
+    initScrollAnimations();
 });
 
 /* --------------------------------------------------------------------------
-   1. Starfield Canvas & Sparkle Particle Engine
+   Scroll-Driven Reveal Animations (IntersectionObserver)
+   -------------------------------------------------------------------------- */
+function initScrollAnimations() {
+    const cards = document.querySelectorAll('.story-card');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, {
+        threshold: 0.15
+    });
+
+    cards.forEach(card => observer.observe(card));
+}
+
+/* --------------------------------------------------------------------------
+   1. Multi-Layered Starfield Canvas & Shooting Star Particle Engine
    -------------------------------------------------------------------------- */
 function initStarfieldCanvas() {
     const canvas = document.getElementById('starfieldCanvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
 
     let width = canvas.width = window.innerWidth;
@@ -24,29 +45,43 @@ function initStarfieldCanvas() {
         height = canvas.height = window.innerHeight;
     });
 
-    // Generate Stars and Shimmering Particles
-    const numStars = 140;
+    const numStars = 180;
     const stars = [];
+    const meteors = [];
 
     const colors = [
         'rgba(255, 255, 255, ',
-        'rgba(255, 182, 193, ',
-        'rgba(255, 209, 220, ',
-        'rgba(225, 190, 231, ',
-        'rgba(255, 240, 245, '
+        'rgba(255, 215, 0, ',   // Gold
+        'rgba(255, 182, 193, ', // Light Pink
+        'rgba(244, 114, 182, ', // Rose
+        'rgba(225, 190, 231, '  // Lavender
     ];
 
     for (let i = 0; i < numStars; i++) {
         stars.push({
             x: Math.random() * width,
             y: Math.random() * height,
-            radius: Math.random() * 2.2 + 0.5,
+            radius: Math.random() * 2.5 + 0.4,
             colorPrefix: colors[Math.floor(Math.random() * colors.length)],
             alpha: Math.random(),
-            speed: Math.random() * 0.015 + 0.005,
-            velocityY: -(Math.random() * 0.2 + 0.05), // gentle upward float
+            speed: Math.random() * 0.018 + 0.005,
+            velocityY: -(Math.random() * 0.25 + 0.05),
             direction: Math.random() > 0.5 ? 1 : -1,
-            isSparkle: Math.random() > 0.55
+            isSparkle: Math.random() > 0.4,
+            flareAngle: Math.random() * Math.PI
+        });
+    }
+
+    function createMeteor() {
+        if (meteors.length >= 2 || Math.random() > 0.015) return;
+        meteors.push({
+            x: Math.random() * width * 0.8 + width * 0.1,
+            y: Math.random() * height * 0.3,
+            length: Math.random() * 80 + 50,
+            speed: Math.random() * 6 + 4,
+            angle: Math.PI / 4 + (Math.random() - 0.5) * 0.2,
+            alpha: 1,
+            life: 0
         });
     }
 
@@ -54,24 +89,54 @@ function initStarfieldCanvas() {
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
         ctx.fillStyle = star.colorPrefix + star.alpha + ')';
-        ctx.shadowBlur = star.radius * 5;
-        ctx.shadowColor = 'rgba(255, 105, 180, 0.85)';
+        ctx.shadowBlur = star.radius * 6;
+        ctx.shadowColor = 'rgba(255, 105, 180, 0.9)';
         ctx.fill();
 
-        // Cross shimmer flare for special sparkles
-        if (star.isSparkle && star.alpha > 0.4) {
+        if (star.isSparkle && star.alpha > 0.35) {
             ctx.save();
-            ctx.strokeStyle = star.colorPrefix + (star.alpha * 0.75) + ')';
-            ctx.lineWidth = 0.8;
-            const len = star.radius * 3.8;
+            ctx.strokeStyle = star.colorPrefix + (star.alpha * 0.85) + ')';
+            ctx.lineWidth = 1;
+            const len = star.radius * 4.2;
+
+            ctx.translate(star.x, star.y);
+            ctx.rotate(star.flareAngle);
 
             ctx.beginPath();
-            ctx.moveTo(star.x - len, star.y);
-            ctx.lineTo(star.x + len, star.y);
-            ctx.moveTo(star.x, star.y - len);
-            ctx.lineTo(star.x, star.y + len);
+            ctx.moveTo(-len, 0);
+            ctx.lineTo(len, 0);
+            ctx.moveTo(0, -len);
+            ctx.lineTo(0, len);
             ctx.stroke();
             ctx.restore();
+        }
+    }
+
+    function drawMeteors() {
+        for (let i = meteors.length - 1; i >= 0; i--) {
+            const m = meteors[i];
+            const endX = m.x - Math.cos(m.angle) * m.length;
+            const endY = m.y - Math.sin(m.angle) * m.length;
+
+            const grad = ctx.createLinearGradient(m.x, m.y, endX, endY);
+            grad.addColorStop(0, 'rgba(255, 255, 255, ' + m.alpha + ')');
+            grad.addColorStop(0.3, 'rgba(255, 182, 193, ' + (m.alpha * 0.7) + ')');
+            grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+            ctx.beginPath();
+            ctx.moveTo(m.x, m.y);
+            ctx.lineTo(endX, endY);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            m.x += Math.cos(m.angle) * m.speed;
+            m.y += Math.sin(m.angle) * m.speed;
+            m.alpha -= 0.012;
+
+            if (m.alpha <= 0 || m.x > width || m.y > height) {
+                meteors.splice(i, 1);
+            }
         }
     }
 
@@ -81,6 +146,7 @@ function initStarfieldCanvas() {
         stars.forEach(star => {
             star.alpha += star.speed * star.direction;
             star.y += star.velocityY;
+            star.flareAngle += 0.005;
 
             if (star.y < 0) {
                 star.y = height;
@@ -98,6 +164,9 @@ function initStarfieldCanvas() {
             drawStar(star);
         });
 
+        createMeteor();
+        drawMeteors();
+
         requestAnimationFrame(animate);
     }
 
@@ -109,14 +178,16 @@ function initStarfieldCanvas() {
    -------------------------------------------------------------------------- */
 function initUnicornFollower() {
     const unicorn = document.getElementById('unicornFollower');
+    if (!unicorn) return;
 
     let targetX = window.innerWidth / 2;
     let targetY = window.innerHeight / 3;
     let currentX = targetX;
     let currentY = targetY;
 
-    // Trail particles array
-    const trailParticles = [];
+    let velX = 0;
+    let velY = 0;
+    let wingFlap = 0;
 
     window.addEventListener('mousemove', (e) => {
         targetX = e.clientX;
@@ -133,42 +204,64 @@ function initUnicornFollower() {
     });
 
     function createTrailParticle(x, y) {
-        if (Math.random() > 0.4) return; // limit frequency
+        if (Math.random() > 0.35) return;
 
         const particle = document.createElement('div');
         particle.className = 'click-heart';
-        const symbols = ['✨', '💖', '⭐', '🌸', '💕'];
+        const symbols = ['✨', '💖', '⭐', '🌸', '💫', '💕'];
         particle.textContent = symbols[Math.floor(Math.random() * symbols.length)];
 
-        // Offset slightly
-        const offsetX = (Math.random() - 0.5) * 30;
-        const offsetY = (Math.random() - 0.5) * 30;
+        const offsetX = (Math.random() - 0.5) * 40;
+        const offsetY = (Math.random() - 0.5) * 40;
 
         particle.style.left = (x + offsetX) + 'px';
         particle.style.top = (y + offsetY) + 'px';
-        particle.style.fontSize = (Math.random() * 12 + 10) + 'px';
+        particle.style.fontSize = (Math.random() * 14 + 10) + 'px';
+        particle.style.pointerEvents = 'none';
 
         document.body.appendChild(particle);
 
         setTimeout(() => {
             particle.remove();
-        }, 1200);
+        }, 1100);
     }
 
     function renderUnicorn() {
-        // Smooth linear interpolation (LERP)
-        currentX += (targetX - currentX) * 0.08;
-        currentY += (targetY - currentY) * 0.08;
+        // Advanced Spring LERP dynamics
+        const prevX = currentX;
+        const prevY = currentY;
 
-        // Calculate slight rotation based on direction
-        const deltaX = targetX - currentX;
-        const tilt = Math.max(-15, Math.min(15, deltaX * 0.15));
+        currentX += (targetX - currentX) * 0.075;
+        currentY += (targetY - currentY) * 0.075;
 
-        // Offset unicorn so cursor point aligns nicely near the horn/head
-        const posX = currentX - 60;
-        const posY = currentY - 60;
+        velX = currentX - prevX;
+        velY = currentY - prevY;
 
-        unicorn.style.transform = `translate3d(${posX}px, ${posY}px, 0) rotate(${tilt}deg)`;
+        const speed = Math.sqrt(velX * velX + velY * velY);
+
+        // Tilt and scale based on movement velocity
+        const tilt = Math.max(-20, Math.min(20, velX * 1.8));
+        const scale = 1 + Math.min(0.15, speed * 0.01);
+
+        // Wing flapping cycle rate speeds up with velocity
+        wingFlap += 0.08 + Math.min(0.2, speed * 0.02);
+        const wingScaleY = 0.85 + Math.sin(wingFlap) * 0.25;
+
+        // Apply wing transform
+        const wingFront = unicorn.querySelector('.wing-front');
+        const wingBack = unicorn.querySelector('.wing-back');
+        if (wingFront && wingBack) {
+            wingFront.style.transformOrigin = '115px 90px';
+            wingBack.style.transformOrigin = '105px 95px';
+            wingFront.style.transform = `scaleY(${wingScaleY})`;
+            wingBack.style.transform = `scaleY(${0.9 + Math.cos(wingFlap) * 0.2})`;
+        }
+
+        // Align unicorn horn/head naturally with cursor point
+        const posX = currentX - 70;
+        const posY = currentY - 70;
+
+        unicorn.style.transform = `translate3d(${posX}px, ${posY}px, 0) rotate(${tilt}deg) scale(${scale})`;
 
         requestAnimationFrame(renderUnicorn);
     }

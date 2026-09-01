@@ -18,69 +18,88 @@
 
     <!-- Unicorn Cursor Follower Container -->
     <div id="unicornFollower" class="unicorn-container">
-        <!-- SVG Unicorn Graphic -->
-        <svg class="unicorn-svg" viewBox="0 0 200 200" width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+        <!-- SVG Unicorn Graphic - Highly Detailed, Elegant Celestial Pegasus-Unicorn -->
+        <svg class="unicorn-svg" viewBox="0 0 240 240" width="140" height="140" xmlns="http://www.w3.org/2000/svg">
             <defs>
-                <linearGradient id="hornGlow" x1="0%" y1="100%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#ffd1dc" />
-                    <stop offset="50%" stop-color="#fff0f5" />
-                    <stop offset="100%" stop-color="#ffb6c1" />
+                <linearGradient id="goldHorn" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#f6d365" />
+                    <stop offset="50%" stop-color="#fda085" />
+                    <stop offset="100%" stop-color="#fff5c3" />
                 </linearGradient>
-                <linearGradient id="maneGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stop-color="#ffb7b2" />
-                    <stop offset="50%" stop-color="#e2f0cb" />
-                    <stop offset="100%" stop-color="#b5ead7" />
+                <linearGradient id="maneRoseGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ff9a9e" />
+                    <stop offset="50%" stop-color="#fecfef" />
+                    <stop offset="100%" stop-color="#a1c4fd" />
                 </linearGradient>
-                <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <linearGradient id="bodyPearl" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stop-color="#ffffff" />
-                    <stop offset="70%" stop-color="#fff0f5" />
-                    <stop offset="100%" stop-color="#ffe4e1" />
+                    <stop offset="60%" stop-color="#fff5f8" />
+                    <stop offset="100%" stop-color="#fce4ec" />
                 </linearGradient>
-                <filter id="magicGlow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="4" result="blur" />
+                <linearGradient id="wingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(255, 255, 255, 0.95)" />
+                    <stop offset="50%" stop-color="rgba(255, 192, 203, 0.7)" />
+                    <stop offset="100%" stop-color="rgba(225, 190, 231, 0.85)" />
+                </linearGradient>
+                <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="5" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+                <filter id="starFlare" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="2" result="blur" />
                     <feComposite in="SourceGraphic" in2="blur" operator="over" />
                 </filter>
             </defs>
 
-            <!-- Unicorn Magic Aura -->
-            <ellipse cx="100" cy="110" rx="65" ry="55" fill="rgba(255, 182, 193, 0.25)" filter="url(#magicGlow)" />
+            <!-- Ambient Magical Aura -->
+            <circle cx="120" cy="120" r="85" fill="rgba(255, 182, 193, 0.28)" filter="url(#softGlow)" />
 
-            <!-- Unicorn Body / Neck / Head Graceful Curves -->
+            <!-- Wings (Left & Right with layered feather detail) -->
+            <g class="unicorn-wings">
+                <!-- Back Wing -->
+                <path class="wing-back" d="M 105 95 C 80 40, 35 45, 25 70 C 20 85, 35 110, 65 115 C 80 118, 95 110, 105 95 Z" fill="url(#wingGradient)" stroke="rgba(255,255,255,0.8)" stroke-width="1" opacity="0.8" />
+
+                <!-- Front Wing -->
+                <path class="wing-front" d="M 115 90 C 95 30, 45 35, 35 60 C 28 78, 45 105, 75 110 C 95 112, 108 102, 115 90 Z" fill="url(#wingGradient)" stroke="#fff" stroke-width="1.5" filter="url(#softGlow)" />
+                <!-- Feather Lines -->
+                <path d="M 55 55 C 65 75, 80 95, 100 100 M 45 70 C 60 85, 75 100, 90 102 M 65 45 C 75 65, 88 85, 105 92" stroke="rgba(255, 182, 193, 0.7)" stroke-width="1.2" fill="none" />
+            </g>
+
+            <!-- Unicorn Body Group -->
             <g id="unicornGroup">
-                <!-- Tail / Flourish -->
-                <path d="M 45 130 C 25 120, 15 150, 25 165 C 35 180, 55 160, 50 140 Z" fill="url(#maneGradient)" opacity="0.85" />
+                <!-- Flowing Majestic Tail -->
+                <path d="M 50 140 C 20 135, 5 165, 20 190 C 35 210, 65 185, 55 155 Z" fill="url(#maneRoseGold)" opacity="0.9" />
+                <path d="M 45 145 C 25 150, 15 175, 28 195 C 40 205, 55 180, 50 160 Z" fill="#fff5c3" opacity="0.6" />
 
-                <!-- Main Body/Chest -->
-                <path d="M 60 145 C 60 110, 80 85, 105 70 C 120 60, 140 55, 155 60 C 165 65, 172 75, 168 85 C 160 100, 140 105, 125 110 C 110 115, 90 130, 80 150 Z" fill="url(#bodyGradient)" stroke="#f8bbd0" stroke-width="1.5" />
+                <!-- Main Torso & Neck -->
+                <path d="M 55 150 C 55 120, 80 95, 110 80 C 130 70, 150 62, 168 68 C 180 72, 185 85, 178 98 C 168 115, 145 120, 130 125 C 110 132, 85 142, 75 165 Z" fill="url(#bodyPearl)" stroke="#f48fb1" stroke-width="1.5" />
 
-                <!-- Head & Snout -->
-                <path d="M 125 75 C 130 65, 140 45, 160 42 C 175 40, 185 50, 180 62 C 175 72, 155 80, 140 80 Z" fill="url(#bodyGradient)" stroke="#f8bbd0" stroke-width="1.5" />
+                <!-- Graceful Head & Snout -->
+                <path d="M 135 85 C 142 72, 155 50, 180 48 C 198 46, 208 58, 202 72 C 195 85, 170 92, 152 92 Z" fill="url(#bodyPearl)" stroke="#f48fb1" stroke-width="1.5" />
 
-                <!-- Horn (Shimmering Spiral) -->
-                <polygon points="152,47 185,10 162,40" fill="url(#hornGlow)" filter="url(#magicGlow)" />
-                <path d="M 154 44 L 180 16 M 157 39 L 175 22 M 160 33 L 170 26" stroke="#fff" stroke-width="1.5" opacity="0.9" />
+                <!-- Golden Spiral Horn -->
+                <polygon points="168,52 215,12 182,45" fill="url(#goldHorn)" filter="url(#softGlow)" />
+                <path d="M 172 48 L 208 20 M 176 43 L 202 26 M 180 37 L 195 31" stroke="#ffffff" stroke-width="1.8" opacity="0.95" />
+                <!-- Horn Tip Flare -->
+                <polygon points="215,12 218,5 221,12 228,15 221,18 218,25 215,18 208,15" fill="#ffffff" filter="url(#starFlare)" />
 
-                <!-- Horn Sparkle Star at tip -->
-                <path d="M 185 10 L 187 5 L 192 10 L 187 15 Z" fill="#ffffff" filter="url(#magicGlow)" />
+                <!-- Delicate Ear -->
+                <path d="M 148 60 C 144 42, 155 38, 158 55 Z" fill="#fff0f5" stroke="#f48fb1" stroke-width="1.2" />
 
-                <!-- Ears -->
-                <path d="M 135 55 C 132 40, 140 35, 143 50 Z" fill="#fff0f5" stroke="#f8bbd0" stroke-width="1" />
+                <!-- Rich Multi-Tone Flowing Mane -->
+                <path d="M 142 66 C 122 48, 102 65, 115 82 C 92 72, 82 95, 100 108 C 78 102, 72 125, 90 135 C 72 140, 78 162, 95 155 C 108 132, 132 100, 148 82 Z" fill="url(#maneRoseGold)" />
+                <path d="M 138 72 C 125 58, 110 72, 120 85 C 102 78, 95 98, 108 110 C 90 108, 88 128, 102 135 Z" fill="#ffe0b2" opacity="0.5" />
 
-                <!-- Ethereal Flowing Mane -->
-                <path d="M 128 60 C 110 45, 95 60, 105 75 C 85 65, 75 85, 90 95 C 70 90, 65 110, 80 120 C 65 125, 70 145, 85 140 C 95 120, 115 90, 130 75 Z" fill="url(#maneGradient)" opacity="0.9" />
+                <!-- Eyelashes & Crown Eye -->
+                <path d="M 178 62 Q 185 68 192 62" fill="none" stroke="#4a148c" stroke-width="2.2" stroke-linecap="round" />
+                <path d="M 180 64 L 178 69 M 185 66 L 185 71 M 190 64 L 192 69" stroke="#4a148c" stroke-width="1.5" stroke-linecap="round" />
 
-                <!-- Closed Gentle Eye with Long Eyelashes -->
-                <path d="M 160 56 Q 166 61 172 56" fill="none" stroke="#6d4c41" stroke-width="2" stroke-linecap="round" />
-                <path d="M 162 58 L 160 62 M 166 60 L 166 64 M 170 58 L 172 62" stroke="#6d4c41" stroke-width="1.5" stroke-linecap="round" />
+                <!-- Rosy Blush -->
+                <ellipse cx="182" cy="75" rx="7" ry="4.5" fill="#ff4081" opacity="0.45" />
 
-                <!-- Cute Blush on Cheek -->
-                <ellipse cx="163" cy="67" rx="6" ry="4" fill="#ff80ab" opacity="0.5" />
-
-                <!-- Subtle Golden/Pink Accent Flowers in Mane -->
-                <circle cx="125" cy="62" r="3.5" fill="#fff" />
-                <circle cx="125" cy="62" r="2" fill="#ff4081" />
-                <circle cx="108" cy="78" r="3" fill="#fff" />
-                <circle cx="108" cy="78" r="1.5" fill="#e040fb" />
+                <!-- Constellation Star Accents on Body -->
+                <path d="M 85 140 L 87 135 L 89 140 L 94 142 L 89 144 L 87 149 L 85 144 L 80 142 Z" fill="#ffd54f" filter="url(#softGlow)" />
+                <path d="M 105 130 L 106 127 L 107 130 L 110 131 L 107 132 L 106 135 L 105 132 L 102 131 Z" fill="#ffffff" />
             </g>
         </svg>
     </div>
@@ -94,43 +113,46 @@
 
         <!-- Section 1: Hero Header for "شادی" -->
         <header class="hero-section">
-            <div class="sparkle-crown">✨ 💖 ✨</div>
+            <div class="sparkle-crown">✨ 👑 💖 👑 ✨</div>
             <h1 class="shadi-title" id="shadiTitle">شادی</h1>
-            <p class="subtitle">تک‌شاخ رؤیاها و دارندهٔ زیباترین قلب جهان</p>
+            <p class="subtitle">همسفر مهربان تک‌شاخ در جاده‌های پرستارهٔ دیار رویاها</p>
         </header>
 
-        <!-- Section 2: Heartfelt Persian Story Cards -->
+        <!-- Section 2: Heartfelt Story Cards - Journey of Shadi and the Unicorn to the City of Dreams -->
         <section class="story-section" id="storySection">
             <!-- Story Card 1 -->
             <article class="story-card" data-aos>
-                <div class="card-icon">🦄 ✨</div>
-                <h2>افسانهٔ حضور تو</h2>
+                <div class="card-icon">🦄 🌸</div>
+                <h2>آغاز یک دوستی جاودانه</h2>
                 <p>
-                    در روزگاری که آسمان‌ها خاموش و ستاره‌ها بی‌رمق بودند، افسانه‌ای از روشنی و مهربانی در میان کهکشان‌ها پیچید.
-                    می‌گفتند در میان تمام زیبایی‌های خلقت، فرشته‌ای با نام <strong>«شادی»</strong> قدم بر زمین می‌گذارد؛
-                    وجودی به پاکی و درخشش تک‌شاخی سپید و افسانه‌ای که با هر نگاهش، دنیایی از عشق و نوری از جنس ماه می‌آفریند.
+                    در مرز میان شب‌های ستاره‌باران و صبح‌های بلورین، دختری مهربان با قلبی شفاف و لبخندی آرام زندگی می‌کرد که نامش <strong>شادی</strong> بود.
+                    شادی همیشه آرزو داشت زیبایی‌های دنیا را کشف کند و مهربانی را به تمام کهکشان‌ها ببخشد.
+                    در یکی از همان شب‌های پر ستاره، تک‌شاخی رویایی و بال‌دار با یال‌های درخشان و شاخ طلایی از میان ابرها فرود آمد.
+                    تک‌شاخ به محض دیدن صداقت و صمیمیت چشم‌های شادی، دانست که صمیمی‌ترین و شایسته‌ترین دوست تمام دوران‌های خود را یافته است.
                 </p>
             </article>
 
             <!-- Story Card 2 -->
             <article class="story-card" data-aos>
-                <div class="card-icon">🌸 💫</div>
-                <h2>جادوی نگاه شادی</h2>
+                <div class="card-icon">✨ 🌌</div>
+                <h2>سفر به سوی دیار رویاها</h2>
                 <p>
-                    تک‌شاخ شاهوار داستان ما، سال‌ها در میان جاده‌های پر از ستاره به دنبال حقیقت نور سرگردان بود.
-                    تا آن روز جادویی که نگاهش به چشمان متین و پر از مهر <strong>شادی</strong> افتاد.
-                    در آن لحظه، خورشید در آغوش صورت و مهربانی او لبخند زد و تمام شکوفه‌های گیلاس زمستان را به بهاری جاودانه بدل ساختند.
+                    آن دو تصمیم گرفتند سفری بزرگ و شگفت‌انگیز را آغاز کنند — سفری به سوی <strong>دیار رویاها (شهر آرزوها)</strong>.
+                    تک‌شاخ بال‌هایش را گشود و شادی بر پشت او نشست. آنها از روی دشت‌های شفق قطبی گذشتند،
+                    از رودخانه‌های جاری از نور ماه عبور کردند و ستاره‌های چشمک‌زن مسیرشان را روشن می‌ساختند.
+                    در طول مسیر، هر جا که صدای خنده‌های شیرین شادی می‌پیچید، جادهٔ نوری از کریستال و الماس زیر پاهایشان شکل می‌گرفت.
                 </p>
             </article>
 
             <!-- Story Card 3 -->
             <article class="story-card" data-aos>
-                <div class="card-icon">👑 💖</div>
-                <h2>همسفر جاودانگی</h2>
+                <div class="card-icon">🏰 💖</div>
+                <h2>رسیدن به دیار رویاها و پادشاهی عشق</h2>
                 <p>
-                    از آن پس، تک‌شاخ رویایی، پاسدار و همسفر همیشگی خطوات شادابی و لبخند تو شد.
-                    هر کجا که «شادی» قدم بگذارد، ردپایی از الماس، مهر و امید بر جای می‌ماند.
-                    تو نه تنها نامت شادی است، بلکه عصاره و معنای واقعی تمام شادی‌های جهان در قلب مهربان تو می‌تپد.
+                    هنگامی که به دروازه‌های درخشان و طلایی دیار رویاها رسیدند، شهر با گل‌های جاودانه و موسیقی زلال ستارگان به استقبالشان آمد.
+                    مردم دیار رویاها شادی را نه تنها به عنوان یک مسافر، بلکه به عنوان ملکهٔ روشنایی و مهربانی پذیرفتند.
+                    تک‌شاخ، پاسدار و همسفر وفادار او، پیمان بست که همواره در کنارش بماند و از نیکی و لبخندش مراقبت کند.
+                    زیرا تمام زیبایی دیار رویاها، انعکاسی از قلب پاک و مهربان شادی بود.
                 </p>
             </article>
         </section>
