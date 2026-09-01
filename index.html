@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>برای شادی | A Celestial Journey for Shadi</title>
+
+    <!-- Google Fonts for Persian & English Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@400;700&family=Katibeh&family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Dynamic Starfield and Shimmer Canvas -->
+    <canvas id="starfieldCanvas"></canvas>
+
+    <!-- Unicorn Cursor Follower Container -->
+    <div id="unicornFollower" class="unicorn-container">
+        <!-- SVG Unicorn Graphic - Highly Detailed, Elegant Celestial Pegasus-Unicorn -->
+        <svg class="unicorn-svg" viewBox="0 0 240 240" width="130" height="130" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="goldHorn" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#f6d365" />
+                    <stop offset="50%" stop-color="#fda085" />
+                    <stop offset="100%" stop-color="#fff5c3" />
+                </linearGradient>
+                <linearGradient id="maneRoseGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ff9a9e" />
+                    <stop offset="50%" stop-color="#fecfef" />
+                    <stop offset="100%" stop-color="#a1c4fd" />
+                </linearGradient>
+                <linearGradient id="bodyPearl" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff" />
+                    <stop offset="60%" stop-color="#fff5f8" />
+                    <stop offset="100%" stop-color="#fce4ec" />
+                </linearGradient>
+                <linearGradient id="wingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="rgba(255, 255, 255, 0.95)" />
+                    <stop offset="50%" stop-color="rgba(255, 192, 203, 0.7)" />
+                    <stop offset="100%" stop-color="rgba(225, 190, 231, 0.85)" />
+                </linearGradient>
+                <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+                    <feGaussianBlur stdDeviation="5" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+                <filter id="starFlare" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur stdDeviation="2" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+            </defs>
+
+            <!-- Ambient Magical Aura -->
+            <circle cx="120" cy="120" r="85" fill="rgba(255, 182, 193, 0.22)" filter="url(#softGlow)" />
+
+            <!-- Wings (Left & Right with layered feather detail) -->
+            <g class="unicorn-wings">
+                <!-- Back Wing -->
+                <path class="wing-back" d="M 105 95 C 80 40, 35 45, 25 70 C 20 85, 35 110, 65 115 C 80 118, 95 110, 105 95 Z" fill="url(#wingGradient)" stroke="rgba(255,255,255,0.8)" stroke-width="1" opacity="0.8" />
+
+                <!-- Front Wing -->
+                <path class="wing-front" d="M 115 90 C 95 30, 45 35, 35 60 C 28 78, 45 105, 75 110 C 95 112, 108 102, 115 90 Z" fill="url(#wingGradient)" stroke="#fff" stroke-width="1.5" filter="url(#softGlow)" />
+                <!-- Feather Lines -->
+                <path d="M 55 55 C 65 75, 80 95, 100 100 M 45 70 C 60 85, 75 100, 90 102 M 65 45 C 75 65, 88 85, 105 92" stroke="rgba(255, 182, 193, 0.7)" stroke-width="1.2" fill="none" />
+            </g>
+
+            <!-- Unicorn Body Group -->
+            <g id="unicornGroup">
+                <!-- Flowing Majestic Tail -->
+                <path d="M 50 140 C 20 135, 5 165, 20 190 C 35 210, 65 185, 55 155 Z" fill="url(#maneRoseGold)" opacity="0.9" />
+                <path d="M 45 145 C 25 150, 15 175, 28 195 C 40 205, 55 180, 50 160 Z" fill="#fff5c3" opacity="0.6" />
+
+                <!-- Main Torso & Neck -->
+                <path d="M 55 150 C 55 120, 80 95, 110 80 C 130 70, 150 62, 168 68 C 180 72, 185 85, 178 98 C 168 115, 145 120, 130 125 C 110 132, 85 142, 75 165 Z" fill="url(#bodyPearl)" stroke="#f48fb1" stroke-width="1.5" />
+
+                <!-- Graceful Head & Snout -->
+                <path d="M 135 85 C 142 72, 155 50, 180 48 C 198 46, 208 58, 202 72 C 195 85, 170 92, 152 92 Z" fill="url(#bodyPearl)" stroke="#f48fb1" stroke-width="1.5" />
+
+                <!-- Golden Spiral Horn -->
+                <polygon points="168,52 215,12 182,45" fill="url(#goldHorn)" filter="url(#softGlow)" />
+                <path d="M 172 48 L 208 20 M 176 43 L 202 26 M 180 37 L 195 31" stroke="#ffffff" stroke-width="1.8" opacity="0.95" />
+                <!-- Horn Tip Flare -->
+                <polygon points="215,12 218,5 221,12 228,15 221,18 218,25 215,18 208,15" fill="#ffffff" filter="url(#starFlare)" />
+
+                <!-- Delicate Ear -->
+                <path d="M 148 60 C 144 42, 155 38, 158 55 Z" fill="#fff0f5" stroke="#f48fb1" stroke-width="1.2" />
+
+                <!-- Rich Multi-Tone Flowing Mane -->
+                <path d="M 142 66 C 122 48, 102 65, 115 82 C 92 72, 82 95, 100 108 C 78 102, 72 125, 90 135 C 72 140, 78 162, 95 155 C 108 132, 132 100, 148 82 Z" fill="url(#maneRoseGold)" />
+                <path d="M 138 72 C 125 58, 110 72, 120 85 C 102 78, 95 98, 108 110 C 90 108, 88 128, 102 135 Z" fill="#ffe0b2" opacity="0.5" />
+
+                <!-- Eyelashes & Crown Eye -->
+                <path d="M 178 62 Q 185 68 192 62" fill="none" stroke="#4a148c" stroke-width="2.2" stroke-linecap="round" />
+                <path d="M 180 64 L 178 69 M 185 66 L 185 71 M 190 64 L 192 69" stroke="#4a148c" stroke-width="1.5" stroke-linecap="round" />
+
+                <!-- Rosy Blush -->
+                <ellipse cx="182" cy="75" rx="7" ry="4.5" fill="#ff4081" opacity="0.45" />
+
+                <!-- Constellation Star Accents on Body -->
+                <path d="M 85 140 L 87 135 L 89 140 L 94 142 L 89 144 L 87 149 L 85 144 L 80 142 Z" fill="#ffd54f" filter="url(#softGlow)" />
+                <path d="M 105 130 L 106 127 L 107 130 L 110 131 L 107 132 L 106 135 L 105 132 L 102 131 Z" fill="#ffffff" />
+            </g>
+        </svg>
+    </div>
+
+    <!-- Main Container -->
+    <main class="container">
+        <!-- Ambient Glowing Background Orbs -->
+        <div class="glow-orb orb-1"></div>
+        <div class="glow-orb orb-2"></div>
+        <div class="glow-orb orb-3"></div>
+
+        <!-- Section 1: Hero Header for "شادی" -->
+        <header class="hero-section">
+            <div class="celestial-badge">
+                <span class="sparkle-icon">✨</span>
+                <span>پادشاهی رویایی و عاشقانهٔ دخترانه</span>
+                <span class="sparkle-icon">✨</span>
+            </div>
+            <h1 class="shadi-title" id="shadiTitle">شادی</h1>
+            <p class="subtitle">فرشتهٔ زیبای من در آسمان‌های پر از ستاره و عشق</p>
+        </header>
+
+        <!-- Romantic Pink Heart Separator -->
+        <div class="divider-ornament">
+            <span class="divider-line"></span>
+            <span class="divider-heart">💖</span>
+            <span class="divider-line"></span>
+        </div>
+
+        <!-- Section 2: Unicorn Interactive Mini-Game -->
+        <section class="game-section" id="gameSection">
+            <div class="game-card">
+                <div class="game-header">
+                    <h2 class="game-title">✨ بازی جادویی تک‌شاخ و شادی ✨</h2>
+                    <p class="game-instructions">اسب تک‌شاخ با حرکت نشانه (ماوس/لمس) شما حرکت می‌کند! قلب‌ها و ستارگان درخشان را جمع کنید تا پیام‌های عاشقانهٔ ویژه را باز کنید!</p>
+                </div>
+
+                <!-- Game Canvas & HUD overlay -->
+                <div class="game-container-wrapper">
+                    <canvas id="gameCanvas"></canvas>
+
+                    <!-- Game HUD Overlay -->
+                    <div class="game-hud">
+                        <div class="hud-box">
+                            <span class="hud-label">💖 امتیاز عشق:</span>
+                            <span id="scoreDisplay" class="hud-value">0</span>
+                        </div>
+                        <div class="hud-box">
+                            <span class="hud-label">⭐ رکورد بی‌نظیر:</span>
+                            <span id="highScoreDisplay" class="hud-value">0</span>
+                        </div>
+                        <button id="startGameBtn" class="game-start-btn">
+                            <span class="btn-sparkle">✨</span>
+                            <span id="gameBtnText">شروع بازی پر از عشق</span>
+                            <span class="btn-sparkle">✨</span>
+                        </button>
+                    </div>
+
+                    <!-- Floating Love Achievement Toast Modal -->
+                    <div id="loveToast" class="love-toast hidden">
+                        <div class="toast-heart">💌</div>
+                        <div id="toastMessage" class="toast-text">شادی جان، تو زیباترین رویای منی!</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Prominent Ending Declaration -->
+        <section class="love-declaration-section">
+            <div class="love-container">
+                <span class="love-text">دوست دارم</span>
+                <span class="heart-emoji">❤️</span>
+            </div>
+            <p class="love-subtitle">جاودان در مسیر بی‌کران ستاره‌ها</p>
+        </section>
+
+        <!-- Interactive Ambient Audio Toggle Bar -->
+        <div class="audio-control-bar">
+            <button id="musicToggleBtn" class="glass-btn" aria-label="پخش موسیقی زمینه">
+                <svg class="audio-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 18V5l12-2v13M9 9l12-2M6 21a3 3 0 100-6 3 3 0 000 6zM18 19a3 3 0 100-6 3 3 0 000 6z"/>
+                </svg>
+                <span id="musicText">طنین جادویی رویایی</span>
+            </button>
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
